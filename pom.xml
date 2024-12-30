@@ -40,6 +40,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!--       Security, authentication, decentralization-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -50,6 +51,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!--        Automatically reload-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -69,6 +71,7 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!--        Automatically generate source code : getter , setter....-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -80,7 +83,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <!--        Supports automatic API documentation generation from MockMVC tests-->
         <dependency>
             <groupId>org.springframework.restdocs</groupId>
             <artifactId>spring-restdocs-mockmvc</artifactId>
@@ -111,17 +114,19 @@
             <version>0.11.5</version>
         </dependency>
 
+        <!--        to convert between DTOs (Data Transfer Objects) and model-->
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>3.2.1</version>
         </dependency>
 
+        <!--        Check the validity of the header data-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-
+        <!--        Send  emails-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
@@ -144,6 +149,7 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>
@@ -181,7 +187,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-
+            <!--            Create a Javadoc document from the project's Java source code-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
