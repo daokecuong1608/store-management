@@ -2,6 +2,7 @@ package com.sapo.store_management.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     public OrderService(OrderRepository orderRepository, OrderProductRepository orderProductRepository,
-            ProductRepository productRepository) {
+                        ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository = orderProductRepository;
         this.productRepository = productRepository;
@@ -72,5 +73,51 @@ public class OrderService {
     public Page<Order> handleGetOrdersWithPagination(Pageable pageable) {
         return this.orderRepository.findAll(pageable);
     }
+
+    @Transactional
+    public Order handleUpdateOrder(int orderId, OrderRequest orderRequest) {
+        Order existingOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        if (orderRequest.getProducts() == null || orderRequest.getProducts().isEmpty()) {
+            throw new IllegalArgumentException("Order must contain at least one product.");
+        }
+
+        existingOrder.setCustomer_id(orderRequest.getCustomer_id());
+        existingOrder.setCoupon_id(orderRequest.getCoupon_id());
+        existingOrder.setStaff_id(orderRequest.getStaff_id());
+        existingOrder.setTotal(orderRequest.getTotal());
+        existingOrder.setPayment(orderRequest.getPayment());
+        existingOrder.setChange_given(orderRequest.getChange_given());
+
+        List<OrderProduct> updateOrderProducts = orderRequest.getProducts().stream()
+                .map(pro -> {
+                    OrderProduct orderProduct = new OrderProduct();
+                    orderProduct.setOrder(existingOrder);
+                    orderProduct.setProduct(productRepository.findById(pro.getProductId()).orElseThrow(() -> new RuntimeException("Not find")));
+                    orderProduct.setQuantity(pro.getQuantity());
+                    orderProduct.setPrice(pro.getPrice());
+                    return orderProduct;
+                }).collect(Collectors.toList());
+        System.out.println(" getOrderProducts :  " +existingOrder.getOrderProducts().toString() );
+        orderProductRepository.deleteAll(existingOrder.getOrderProducts());
+
+        orderProductRepository.saveAll(updateOrderProducts);
+
+        existingOrder.setOrderProducts(updateOrderProducts);
+
+        return orderRepository.save(existingOrder);
+    }
+
+    @Transactional
+    public void handleDeleteOrder(int orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + orderId));
+
+        orderProductRepository.deleteAll(order.getOrderProducts());
+
+        orderRepository.delete(order);
+    }
+
 
 }

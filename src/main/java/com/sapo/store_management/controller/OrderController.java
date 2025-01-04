@@ -4,11 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.sapo.store_management.dto.OrderRequest;
 import com.sapo.store_management.model.Order;
@@ -34,6 +30,18 @@ public class OrderController {
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         Order createdOrder = orderService.handleCreateOrder(orderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
+    }
+
+    @PutMapping("{orderID}")
+    public ResponseEntity<Order> updateOrder(@Valid @PathVariable int orderID, @RequestBody OrderRequest orderRequest) {
+        Order updatedOrder = orderService.handleUpdateOrder(orderID, orderRequest);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
+    @DeleteMapping("{orderID}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable int orderID) {
+        orderService.handleDeleteOrder(orderID);
+        return ResponseEntity.noContent().build();
     }
 
 }
