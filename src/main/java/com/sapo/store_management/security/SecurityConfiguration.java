@@ -48,6 +48,14 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(
                 config -> config
                         .requestMatchers(HttpMethod.POST , Endpoints.PUBLIC_POST_ENDPOINT).permitAll()
+                        .requestMatchers(HttpMethod.GET , Endpoints.ADMIN_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST , Endpoints.ADMIN_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT , Endpoints.ADMIN_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE , Endpoints.ADMIN_DELETE_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET , Endpoints.STAFF_GET_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.POST , Endpoints.STAFF_POST_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.PUT , Endpoints.STAFF_PUT_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.DELETE , Endpoints.STAFF_DELETE_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
 
         );
         http.cors(Customizer.withDefaults());

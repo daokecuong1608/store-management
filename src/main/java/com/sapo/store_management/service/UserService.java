@@ -17,6 +17,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    public User findByUsername(String username){
+        return  userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Couldn't find'"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
