@@ -3,6 +3,8 @@ package com.sapo.store_management.controller;
 
 import com.sapo.store_management.dto.JwtResponse;
 import com.sapo.store_management.dto.LoginRequest;
+import com.sapo.store_management.dto.UserRequest;
+import com.sapo.store_management.model.User;
 import com.sapo.store_management.service.JWTService;
 import com.sapo.store_management.service.UserService;
 import jakarta.validation.Valid;
@@ -51,9 +53,9 @@ public class UserController {
             if (authentication.isAuthenticated()) {
                 final String accessToken = jwtService.generateAccessToken(loginRequest.getUsername());
                 final String refreshToken = jwtService.generateRefreshToken(loginRequest.getUsername());
-                System.out.println("username login: " + refreshToken);
+                User user = userService.findByUsername(loginRequest.getUsername());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken));
+                return ResponseEntity.ok(new JwtResponse(accessToken, refreshToken, user.getId(), user.getUsername(), user.getFullname()));
             }
         } catch (AuthenticationException e) {
             e.printStackTrace();
@@ -81,6 +83,19 @@ public class UserController {
         }
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody UserRequest userRequest) {
+        try {
+            userService.registerUser(userRequest);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred during registration");
+        }
+    }
 
 
 }

@@ -67,6 +67,8 @@ public class JwtFilter extends OncePerRequestFilter {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else if (claims.get("isStaff") != null && (Boolean) claims.get("isStaff")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_STAFF"));
+        }else if (claims.get("isCSR") != null && (Boolean) claims.get("isCSR")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_CSR"));
         }
 
         return authorities;

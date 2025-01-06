@@ -22,5 +22,9 @@ public class RoleTestController {
     public String staffAccess() {
         return "Hello Staff! You have access to this endpoint.";
     }
+    @GetMapping("/csr")
+    public String csrAccess() {
+        return "Hello CSR! You have access to this endpoint.";
+    }
 
 }

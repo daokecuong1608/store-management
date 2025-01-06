@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
+
 
     @Value("${jwt.secret}")
     private String SERECT;
@@ -38,6 +40,7 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
         boolean isAdmin = false;
         boolean isStaff = false;
+        boolean isCSR   = false;
         User user = userService.findByUsername(username);
         if (user != null && user.getRole() != null) {
             if (user.getRole().equals("ROLE_ADMIN")) {
@@ -46,9 +49,13 @@ public class JWTService {
             if (user.getRole().equals("ROLE_STAFF")) {
                 isStaff = true;
             }
+            if (user.getRole().equals("ROLE_CSR")) {
+                isCSR = true;
+            }
         }
         claims.put("isAdmin", isAdmin);
         claims.put("isStaff", isStaff);
+        claims.put("isCSR", isCSR);
         return createToken(claims, username, accessTokenExpiration);
     }
 
@@ -57,6 +64,8 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
         boolean isAdmin = false;
         boolean isStaff = false;
+        boolean isCSR   = false;
+
         User user = userService.findByUsername(username);
         if (user != null && user.getRole() != null) {
             if (user.getRole().equals("ROLE_ADMIN")) {
@@ -65,9 +74,13 @@ public class JWTService {
             if (user.getRole().equals("ROLE_STAFF")) {
                 isStaff = true;
             }
+            if (user.getRole().equals("ROLE_CSR")) {
+                isCSR = true;
+            }
         }
         claims.put("isAdmin", isAdmin);
         claims.put("isStaff", isStaff);
+        claims.put("isCSR", isCSR);
         return createToken(claims, username, refreshTokenExpiration);
     }
 
