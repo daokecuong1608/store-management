@@ -46,6 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 Map<String, Object> claims = jwtService.extractAllClaim(token);
                 List<SimpleGrantedAuthority> authorities = extractAuthoritiesFromPayload(claims);
                 System.out.println("Author : " + authorities);
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

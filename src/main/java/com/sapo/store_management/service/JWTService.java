@@ -24,13 +24,17 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String SERECT;
 
-    @Value("${jwt.expiration}")
-    private long Expiration;
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpiration;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
 
     @Autowired
     private UserService userService;
 
-    public String generateToken(String username) {
+    // Generate Access Token
+    public String generateAccessToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         boolean isAdmin = false;
         boolean isStaff = false;
@@ -45,15 +49,35 @@ public class JWTService {
         }
         claims.put("isAdmin", isAdmin);
         claims.put("isStaff", isStaff);
-        return createToken(claims, username);
+        return createToken(claims, username, accessTokenExpiration);
     }
 
-    private String createToken(Map<String, Object> claims, String username) {
+    // Generate Refresh Token
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        boolean isAdmin = false;
+        boolean isStaff = false;
+        User user = userService.findByUsername(username);
+        if (user != null && user.getRole() != null) {
+            if (user.getRole().equals("ROLE_ADMIN")) {
+                isAdmin = true;
+            }
+            if (user.getRole().equals("ROLE_STAFF")) {
+                isStaff = true;
+            }
+        }
+        claims.put("isAdmin", isAdmin);
+        claims.put("isStaff", isStaff);
+        return createToken(claims, username, refreshTokenExpiration);
+    }
+
+
+    private String createToken(Map<String, Object> claims, String username, long expirationTime) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS512, getSigneKey())
                 .compact();
     }
@@ -66,9 +90,14 @@ public class JWTService {
 
 
     // Extract all the information (claims) from a JWT token.
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigneKey()).parseClaimsJws(token).getBody();
+    public Claims extractAllClaims(String token) throws SignatureException {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigneKey()) // Đảm bảo `secretKey` chính xác
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
+
 
     //Extract specific information from the token
     public <T> T extractClaim(String token, Function<Claims, T> claimsTFunction) {
@@ -91,11 +120,10 @@ public class JWTService {
         return extractExpriration(token).before(new Date());
     }
 
-    //Check the validity of the token and match it with user information.
+    // Validate Token
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String tenDangNhap = extractUsername(token);
-        System.out.println(tenDangNhap);
-        return (tenDangNhap.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public Map<String, Object> extractAllClaim(String token) {
@@ -110,7 +138,16 @@ public class JWTService {
         } catch (SignatureException e) {
             throw new RuntimeException("JWT signature validation failed");
         }
+    }
 
+
+    // Validate Refresh Token and generate new Access Token
+    public String validateAndGenerateAccessToken(String refreshToken, UserDetails userDetails) {
+        if (validateToken(refreshToken, userDetails)) {
+            return generateAccessToken(userDetails.getUsername());
+        } else {
+            throw new RuntimeException("Invalid or expired refresh token");
+        }
     }
 
 
