@@ -1,7 +1,10 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.model.Product;
 import com.sapo.store_management.service.ProductService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +25,23 @@ public class ProductController {
     public Product getProductById(@PathVariable int id) {return productService.getProductById(id);}
 
     @PostMapping("/insert")
-    public void insertProduct(@RequestBody Product product) {productService.saveProduct(product);}
+    public void insertProduct(@RequestBody Product product)
+    {productService.saveProduct(product);}
 
-    @PutMapping("/update")
-    public void updateProduct(@RequestBody Product product) {productService.saveProduct(product);}
+
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProductDTO> updateProduct(@Valid @PathVariable int id, @RequestBody ProductDTO productDTO) {
+
+        ProductDTO dto = productService.updateProduct(id, productDTO);
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
+
 
     @DeleteMapping("/delete")
     public void deleteProduct(@RequestBody Product product) {productService.deleteProduct(product);}
