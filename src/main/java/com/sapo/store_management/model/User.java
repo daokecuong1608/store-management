@@ -33,6 +33,33 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role;
 
+    @NotBlank(message = "fullname cannot be blank")
+    @Size(min = 3, max = 50, message = "fullname must be between 3 and 50 characters")
+    @Column(name = "full_name", nullable = false, unique = true)
+    private String fullname;
+
+    @Size(min = 1, max = 100, message = "age must be between 1 and 100 ")
+    @Column(name = "age")
+    private int age;
+
+
+    public @NotBlank(message = "fullname cannot be blank") @Size(min = 3, max = 50, message = "fullname must be between 3 and 50 characters") String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(@NotBlank(message = "fullname cannot be blank") @Size(min = 3, max = 50, message = "fullname must be between 3 and 50 characters") String fullname) {
+        this.fullname = fullname;
+    }
+
+    @Size(min = 1, max = 100, message = "age must be between 1 and 100 ")
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(@Size(min = 1, max = 100, message = "age must be between 1 and 100 ") int age) {
+        this.age = age;
+    }
+
     public int getId() {
         return id;
     }
