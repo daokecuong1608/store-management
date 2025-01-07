@@ -4,6 +4,8 @@ import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.model.Product;
 import com.sapo.store_management.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,15 +21,30 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public List<Product> getlAllProducts() {return productService.getAllProducts();}
+    public ResponseEntity<Page<Product>> getlAllProducts(@RequestParam int page,
+                                                         @RequestParam int size,
+                                                         @RequestParam(defaultValue = "id") String sortBy) {
+        Page<Product> product = productService.getAllProducts(page, size, sortBy);
+        return ResponseEntity.ok(product);
+    }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable int id) {return productService.getProductById(id);}
+    public ResponseEntity<Product> getProductById(@PathVariable int id) {
+        Product product = productService.getProductById(id);
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @PostMapping("/insert")
-    public void insertProduct(@RequestBody Product product)
-    {productService.saveProduct(product);}
-
+    public ResponseEntity<Product> insertProduct(@RequestBody Product product) {
+        Product insert = productService.saveProduct(product);
+        if (product != null) {
+            return ResponseEntity.ok(product);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
     @PutMapping("/update/{id}")
@@ -41,8 +58,9 @@ public class ProductController {
     }
 
 
-
-
-    @DeleteMapping("/delete")
-    public void deleteProduct(@RequestBody Product product) {productService.deleteProduct(product);}
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable int id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
+    }
 }

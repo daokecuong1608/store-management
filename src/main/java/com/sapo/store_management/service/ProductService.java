@@ -3,6 +3,10 @@ package com.sapo.store_management.service;
 import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.model.Product;
 import com.sapo.store_management.repository.ProductRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -16,29 +20,30 @@ public class ProductService {
         this.productRepo = productRepo;
     }
 
-    public List<Product> getAllProducts() {return productRepo.findAll();}
+    public Page<Product> getAllProducts(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        Page<Product> result = productRepo.findAll(pageable);
+        return result;
 
-    public Product getProductById(int id) {return productRepo.getReferenceById(id);}
+    }
 
-    public void saveProduct(Product product) {productRepo.save(product);}
+    public Product getProductById(int id) {
+        Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        return product;
+    }
 
-    public void deleteProduct(Product product) {productRepo.delete(product);}
+    public Product saveProduct(Product product) {
+        Product insert = productRepo.save(product);
+        return insert;
+    }
 
-//    private String code;
-//
-//    private String name;
-//
-//    private String description;
-//
-//    private int price;
-//
-//    private int capital_price;
-//
-//    private String image;
-//
-//    private String status;
+    public void deleteProduct(int id) {
+        Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+        productRepo.delete(product);
+    }
 
-public ProductDTO updateProduct(int product_id  , ProductDTO productDTO){
+
+    public ProductDTO updateProduct(int product_id, ProductDTO productDTO) {
         Product product = productRepo.findById(product_id)
                 .orElseThrow(() -> new RuntimeException("Not find"));
 
@@ -63,7 +68,7 @@ public ProductDTO updateProduct(int product_id  , ProductDTO productDTO){
         dto.setImage(update.getImage());
         dto.setStatus(update.getStatus());
         return dto;
-}
+    }
 
 
 }

@@ -1,6 +1,9 @@
 package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +25,16 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull(message = "Brand name cannot be blank")
+    @Size(max = 100, message = "Brand name cannot exceed 100 characters")
     private String name;
 
     @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
 
     @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updated_at;
 
     public Brand(String name, Date created_at) {

@@ -5,6 +5,10 @@ import com.sapo.store_management.model.Variant;
 import com.sapo.store_management.repository.VariantRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -14,17 +18,33 @@ import java.util.List;
 public class VariantService {
     private static final Logger log = LoggerFactory.getLogger(VariantService.class);
     private final VariantRepo variantRepo;
+
     public VariantService(VariantRepo variantRepo) {
         this.variantRepo = variantRepo;
     }
 
-    public List<Variant> getAllVariants() {return variantRepo.findAll();}
+    public Page<Variant> getAllVariants(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        Page<Variant> variants = variantRepo.findAll(pageable);
+        return variants;
 
-    public Variant getVariantById(int id) {return variantRepo.findById(id).get();}
+    }
 
-    public void insertVariant(Variant variant) {variantRepo.save(variant);}
+    public Variant getVariantById(int id) {
+        Variant variant = variantRepo.findById(id).orElseThrow(() -> new RuntimeException("Not find variant"));
+        return variant;
 
-    public void deleteVariant(Variant variant) {variantRepo.delete(variant);}
+    }
+
+    public Variant insertVariant(Variant variant) {
+        Variant var = variantRepo.save(variant);
+        return var;
+    }
+
+    public void deleteVariant(int id) {
+        Variant variant = variantRepo.findById(id).orElseThrow(() -> new RuntimeException("Not find variant"));
+        variantRepo.delete(variant);
+    }
 
     public VariantRequest updateVariant(int id, VariantRequest variantRequest) {
         Variant variant = variantRepo.findById(id)

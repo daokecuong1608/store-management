@@ -3,6 +3,11 @@ package com.sapo.store_management.service;
 import com.sapo.store_management.dto.ProductCategoryRequest;
 import com.sapo.store_management.model.ProductCategory;
 import com.sapo.store_management.repository.ProductCategoryRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -11,17 +16,33 @@ import java.util.List;
 @Service
 public class ProductCategoryService {
     private final ProductCategoryRepo productCategoryRepo;
+
     public ProductCategoryService(ProductCategoryRepo productCategoryRepo) {
         this.productCategoryRepo = productCategoryRepo;
     }
 
-    public List<ProductCategory> getAllPC() {return productCategoryRepo.findAll();}
+    public Page<ProductCategory> getAllPC(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        Page<ProductCategory> result = productCategoryRepo.findAll(pageable);
+        return result;
+    }
 
-    public ProductCategory findById(int id) {return productCategoryRepo.getReferenceById(id);}
+    public ProductCategory findById(int id) {
+        ProductCategory productCategory = productCategoryRepo.findById(id)
+                .orElseThrow(() -> new IllegalStateException("ProductCategory not found"));
+        return productCategory;
+    }
 
-    public void insertPC(ProductCategory productCategory) {productCategoryRepo.save(productCategory);}
+    public ProductCategory insertPC(ProductCategory productCategory) {
+        ProductCategory inProductCategory = productCategoryRepo.save(productCategory);
+        return inProductCategory;
+    }
 
-    public void deletePC(ProductCategory productCategory) {productCategoryRepo.delete(productCategory);}
+    public void deletePC(int id) {
+        ProductCategory productCategory = productCategoryRepo.findById(id)
+                .orElseThrow(() -> new IllegalStateException("ProductCategory not found"));
+        productCategoryRepo.delete(productCategory);
+    }
 
     public ProductCategoryRequest updatePC(int id, ProductCategoryRequest productCategoryRequest) {
         ProductCategory productCategory = productCategoryRepo.findById(id)
