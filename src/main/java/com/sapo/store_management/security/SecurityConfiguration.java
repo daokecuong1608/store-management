@@ -48,6 +48,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(
                 config -> config
                         .requestMatchers(HttpMethod.POST , Endpoints.PUBLIC_POST_ENDPOINT).permitAll()
+                        .anyRequest().permitAll()
 
         );
         http.cors(Customizer.withDefaults());
