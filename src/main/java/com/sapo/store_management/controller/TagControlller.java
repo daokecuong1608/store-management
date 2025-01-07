@@ -1,7 +1,10 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.TagRequest;
 import com.sapo.store_management.model.Tag;
 import com.sapo.store_management.service.TagService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +25,15 @@ public class TagControlller {
 
     @PostMapping("/insert")
     public void insertTag(@RequestBody Tag tag) {tagService.insertTag(tag);}
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<TagRequest> updateTad(@Valid @PathVariable int id, @RequestBody TagRequest tagRequest){
+        TagRequest request = tagService.updateTag(id, tagRequest);
+        if(request != null) {
+            return ResponseEntity.ok(request);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @DeleteMapping("/delete")
     public void deleteTag(@RequestBody Tag tag) {tagService.deleteTag(tag);}

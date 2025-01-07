@@ -9,9 +9,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.util.Date;
 
 @Entity
-@Table
 @EntityListeners(AuditingEntityListener.class)
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Category {
     @Id

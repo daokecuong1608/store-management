@@ -1,7 +1,9 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.BrandRequest;
 import com.sapo.store_management.model.Brand;
 import com.sapo.store_management.service.BrandService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +24,15 @@ public class BrandController {
 
     @PostMapping("/insert")
     public void insertBrand(@RequestBody Brand brand) {brandService.insertBrand(brand);}
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<BrandRequest> updateBrand(@PathVariable int id, @RequestBody BrandRequest brandRequest) {
+        BrandRequest request = brandService.updateBrand(id, brandRequest);
+        if(request != null) {
+            return ResponseEntity.ok(request);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
     @DeleteMapping("/delete")
     public void deleteBrand(@RequestBody Brand brand) {brandService.deleteBrand(brand);}
