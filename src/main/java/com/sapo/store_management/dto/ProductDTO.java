@@ -1,22 +1,15 @@
-package com.sapo.store_management.model;
+package com.sapo.store_management.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductDTO {
+
     private int id;
 
     private String code;
@@ -33,19 +26,6 @@ public class Product {
 
     private String status;
 
-    @CreatedDate
-    private Date created_at;
-
-    @LastModifiedDate
-    private Date updated_date;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getCode() {
         return code;
@@ -101,21 +81,5 @@ public class Product {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public Date getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
-    }
-
-    public Date getUpdated_date() {
-        return updated_date;
-    }
-
-    public void setUpdated_date(Date updated_date) {
-        this.updated_date = updated_date;
     }
 }

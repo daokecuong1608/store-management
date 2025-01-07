@@ -1,0 +1,38 @@
+package com.sapo.store_management.service;
+
+import com.sapo.store_management.dto.CategoryRequest;
+import com.sapo.store_management.model.Category;
+import com.sapo.store_management.repository.CategoryRepo;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class CategoryService {
+    private final CategoryRepo categoryRepo;
+
+    CategoryService(CategoryRepo categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
+
+    public List<Category> findAllCategories() {return categoryRepo.findAll();}
+
+    public Category findById(int id) {return categoryRepo.getReferenceById(id);}
+
+    public void saveCategory(Category category) {categoryRepo.save(category);}
+
+    public void deleteCategory(Category category) {categoryRepo.delete(category);}
+
+    public CategoryRequest updateCategory(int id, CategoryRequest categoryRequest) {
+        Category category = categoryRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        category.setName(categoryRequest.getName());
+        category.setUpdated_at(new Date(System.currentTimeMillis()));
+
+        Category update = categoryRepo.save(category);
+
+        return new CategoryRequest(update.getId(), update.getName());
+    }
+}
