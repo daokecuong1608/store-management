@@ -68,4 +68,9 @@ public class VariantService {
                 update.getOption3(),
                 update.getPrice());
     }
+
+    public Variant getVariantEntityById(Integer id) {
+        return variantRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Variant not found"));
+    }
 }

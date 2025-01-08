@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -38,15 +42,37 @@ public class JwtFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.loadUserByUsername(username);
             if (jwtService.validateToken(token, userDetails)) {
+                // Trích xuất quyền từ payload
+                Map<String, Object> claims = jwtService.extractAllClaim(token);
+                List<SimpleGrantedAuthority> authorities = extractAuthoritiesFromPayload(claims);
+                System.out.println("Author : " + authorities);
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        userDetails.getAuthorities());
+                        authorities
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
             }
         }
         filterChain.doFilter(request, response);
-
     }
+
+    private List<SimpleGrantedAuthority> extractAuthoritiesFromPayload(Map<String, Object> claims) {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        // Ưu tiên quyền Admin nếu tồn tại
+        if (claims.get("isAdmin") != null && (Boolean) claims.get("isAdmin")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else if (claims.get("isStaff") != null && (Boolean) claims.get("isStaff")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_STAFF"));
+        }else if (claims.get("isCSR") != null && (Boolean) claims.get("isCSR")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_CSR"));
+        }
+
+        return authorities;
+    }
+
+
 }

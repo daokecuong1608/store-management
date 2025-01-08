@@ -21,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+
 @EnableWebSecurity
 @Configuration
 public class SecurityConfiguration {
@@ -36,7 +37,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public DaoAuthenticationProvider authenticationProvider(UserService userService){
+    public DaoAuthenticationProvider authenticationProvider(UserService userService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userService);
         provider.setPasswordEncoder(passwordEncoder());
@@ -44,13 +45,26 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 config -> config
-                        .requestMatchers(HttpMethod.POST , Endpoints.PUBLIC_POST_ENDPOINT).permitAll()
-                        .anyRequest().permitAll()
-
-        );
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/refresh-token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, Endpoints.ADMIN_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, Endpoints.ADMIN_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.ADMIN_DELETE_ENDPOINT)
+                        .hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, Endpoints.STAFF_GET_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.POST, Endpoints.STAFF_POST_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.PUT, Endpoints.STAFF_PUT_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.STAFF_DELETE_ENDPOINT)
+                        .hasAnyAuthority("ROLE_STAFF")
+                        .requestMatchers(HttpMethod.GET, Endpoints.CSR_GET_ENDPOINT).hasAnyAuthority("ROLE_CSR")
+                        .requestMatchers(HttpMethod.POST, Endpoints.CSR_POST_ENDPOINT).hasAnyAuthority("ROLE_CSR")
+                        .requestMatchers(HttpMethod.PUT, Endpoints.CSR_PUT_ENDPOINT).hasAnyAuthority("ROLE_CSR")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.CSR_DELETE_ENDPOINT).hasAnyAuthority("ROLE_CSR"));
         http.cors(Customizer.withDefaults());
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -61,7 +75,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public CorsFilter corsFilter(){
+    public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(front_end_host));
