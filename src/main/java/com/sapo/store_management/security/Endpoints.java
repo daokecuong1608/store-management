@@ -14,7 +14,7 @@ public class Endpoints {
             "/api/category/**",
             "/api/tag/**",
             "/api/product/**",
-             "/api/product/by-tag/**"
+            "/api/product/by-tag/**"
 
 
     };
@@ -65,5 +65,36 @@ public class Endpoints {
     public static String[] CSR_PUT_ENDPOINT = {
             "/api/test/staff/**"
     };
+
+    //test
+    public static String[] PUBLIC_GET_ENDPOINT = {
+            "/api/brand/**",
+            "/api/category/**",
+            "/api/tag/**",
+            "/api/product/**",
+            "/api/product/by-tag/**"
+    };
+    public static String[] PUBLIC_POST_ENDPOINT = {
+            "/api/test/admin/**",
+            "/api/brand/**",
+            "/api/category/**",
+            "/api/tag/**",
+            "/api/product/**"
+    };
+    public static String[] PUBLIC_DELETE_ENDPOINT = {
+            "/api/test/admin/**",
+            "/api/brand/**",
+            "/api/category/**",
+            "/api/tag/**",
+            "/api/product/**"
+    };
+    public static String[] PUBLIC_PUT_ENDPOINT = {
+            "/api/test/admin/**",
+            "/api/brand/**",
+            "/api/category/**",
+            "/api/tag/**",
+            "/api/product/**"
+    };
+
 
 }
