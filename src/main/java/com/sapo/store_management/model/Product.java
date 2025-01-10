@@ -1,55 +1,76 @@
 package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "tbl_product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  @Column(name = "id")
+    private Integer id;
 
-    @NotBlank(message = "Product code cannot be blank")
-    @Size(max = 50, message = "Product code cannot exceed 50 characters")
+    @Column(name = "code")
     private String code;
 
-    @NotNull(message = "Product name cannot be blank")
-    @Size(max = 100, message = "Product name cannot exceed 100 characters")
+    @Column(name = "name")
     private String name;
 
-    @Size(max = 500, message = "Description cannot exceed 500 characters")
+    @Column(name = "description")
     private String description;
 
-    @NotNull(message = "Price cannot be null")
-    @Positive(message = "Price must be greater than 0")
+    @Column(name = "price")
     private int price;
 
-    @NotNull(message = "Capital price cannot be null")
-    @PositiveOrZero(message = "Capital price must be greater than or equal to 0")
+    @Column(name = "capital_price")
     private int capital_price;
 
-    @Size(max = 255, message = "Image URL cannot exceed 255 characters")
+    @Column(name = "image")
     private String image;
 
-    @NotNull(message = "Status cannot be blank")
-    private String status;
+    @Column(name = "status")
+    private boolean status;
 
-    @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created_at;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime created_at;
 
-    @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated_date;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime updated_at;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id", nullable = false, referencedColumnName = "id")
+    private Brand brand;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
+    private Category category;
+
+
+
+  @ManyToOne
+  @JoinColumn(name = "tag_id", nullable = false)
+  private Tag tag;
+
+
+  @PrePersist
+    public void prePersist() {
+        this.created_at = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updated_at = LocalDateTime.now();
+    }
+
+
 }

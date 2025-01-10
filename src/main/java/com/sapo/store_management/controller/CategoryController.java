@@ -1,14 +1,12 @@
 package com.sapo.store_management.controller;
 
-import com.sapo.store_management.dto.CategoryRequest;
-import com.sapo.store_management.model.Category;
-import com.sapo.store_management.service.CategoryService;
+import com.sapo.store_management.dto.category.CategoryRequest;
+import com.sapo.store_management.dto.category.CategoryResponse;
+import com.sapo.store_management.service.category.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/category")
@@ -18,37 +16,38 @@ public class CategoryController {
     CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
-    @GetMapping("")
-    public ResponseEntity<Page<Category>> getAllCategories(
+
+    @GetMapping
+    public ResponseEntity<Page<CategoryResponse>> getAllCategories(
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(defaultValue = "id") String sortBy) {
-        Page<Category> categories = categoryService.findAllCategories(page, size, sortBy);
+        Page<CategoryResponse> categories = categoryService.getAllCategory(page, size, sortBy);
         return ResponseEntity.ok(categories);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategory(@PathVariable int id) {
-        Category category = categoryService.findById(id);
+    public ResponseEntity<CategoryResponse> getCategory(@PathVariable Integer id) {
+        CategoryResponse category = categoryService.getCategoryById(id);
         if (category != null) {
             return ResponseEntity.ok(category);
         }
         return ResponseEntity.notFound().build();
     }
-    @PostMapping("/insert")
-    public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category) {
-        Category insertCategory = categoryService.saveCategory(category);
+    @PostMapping
+    public ResponseEntity<CategoryResponse> insertCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse insertCategory = categoryService.insertCategory(categoryRequest);
         return ResponseEntity.ok(insertCategory);
     }
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CategoryRequest> updateCategory(@Valid @PathVariable int id, @RequestBody CategoryRequest categoryRequest) {
-        CategoryRequest request = categoryService.updateCategory(id, categoryRequest);
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryResponse> updateCategory(@Valid @PathVariable Integer id, @RequestBody CategoryRequest categoryRequest) {
+        CategoryResponse request = categoryService.updateCategory(id, categoryRequest);
         if (request != null) {
             return ResponseEntity.ok(request);
         }
         return ResponseEntity.notFound().build();
     }
-    @DeleteMapping("/delete/{id}")
-    public void deleteCategory(@PathVariable int id) {
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
     }
 }

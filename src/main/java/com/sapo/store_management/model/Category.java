@@ -1,36 +1,43 @@
 package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "tbl_category")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private Integer id;
 
-    @NotNull(message = "Category name cannot be blank")
-    @Size(max = 100, message = "Category name cannot exceed 100 characters")
+    @Column(name = "name")
     private String name;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime created_at;
 
-    @CreatedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created_at;
+    @Column(name = "updated_at" , columnDefinition = "TIMESTAMP")
+    private LocalDateTime updated_at;
 
-    @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updated_at;
+    @PrePersist
+    public void prePersist() {
+        this.created_at = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updated_at = LocalDateTime.now();
+    }
+
 }

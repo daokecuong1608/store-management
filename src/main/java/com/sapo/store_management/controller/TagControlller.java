@@ -1,14 +1,12 @@
 package com.sapo.store_management.controller;
 
-import com.sapo.store_management.dto.TagRequest;
-import com.sapo.store_management.model.Tag;
-import com.sapo.store_management.service.TagService;
+import com.sapo.store_management.dto.tag.TagRequest;
+import com.sapo.store_management.dto.tag.TagResponse;
+import com.sapo.store_management.service.tag.TagService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/tag")
@@ -20,45 +18,46 @@ public class TagControlller {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Tag>> getAllTags(
+    public ResponseEntity<Page<TagResponse>> getAllTags(
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(defaultValue = "id") String sortBy
     ) {
-        Page<Tag> tag = tagService.getAllTags(page, size, sortBy);
+        Page<TagResponse> tag = tagService.getAllTag(page, size, sortBy);
         return ResponseEntity.ok(tag);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getTagById(@PathVariable int id) {
-        Tag tag = tagService.getTagById(id);
+    public ResponseEntity<TagResponse> getTagById(@PathVariable Integer id) {
+        TagResponse tag = tagService.getById(id);
         if (tag != null) {
             return ResponseEntity.ok(tag);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/insert")
-    public ResponseEntity<Tag> insertTag(@Valid @RequestBody Tag tag) {
-        Tag insert = tagService.insertTag(tag);
+    @PostMapping
+    public ResponseEntity<TagResponse> insertTag(@Valid @RequestBody TagRequest tagRequest) {
+        TagResponse insert = tagService.save(tagRequest);
         if (insert != null) {
             return ResponseEntity.ok(insert);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<TagRequest> updateTad(@Valid @PathVariable int id, @RequestBody TagRequest tagRequest) {
-        TagRequest request = tagService.updateTag(id, tagRequest);
+    @PutMapping("/{id}")
+    public ResponseEntity<TagResponse> updateTad(@Valid @PathVariable Integer id, @RequestBody TagRequest tagRequest) {
+        TagResponse request = tagService.update(id , tagRequest);
         if (request != null) {
             return ResponseEntity.ok(request);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteTag(@PathVariable int id) {
-        tagService.deleteTag(id);
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTag(@PathVariable Integer id) {
+        tagService.deleteById(id);
         return ResponseEntity.ok().build();
     }
 }

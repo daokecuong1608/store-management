@@ -53,8 +53,8 @@ public class ProductService {
         product.setPrice(productDTO.getPrice());
         product.setCapital_price(productDTO.getCapital_price());
         product.setImage(productDTO.getImage());
-        product.setStatus(productDTO.getStatus());
-        product.setUpdated_date(new Date(System.currentTimeMillis()));
+//        product.setStatus(.getStatus());
+//        product.setUpdated_date(new Date(System.currentTimeMillis()));
 
         Product update = productRepo.save(product);
 
@@ -66,7 +66,7 @@ public class ProductService {
         dto.setPrice(update.getPrice());
         dto.setCapital_price(update.getCapital_price());
         dto.setImage(update.getImage());
-        dto.setStatus(update.getStatus());
+//        dto.setStatus(update.getStatus());
         return dto;
     }
 
