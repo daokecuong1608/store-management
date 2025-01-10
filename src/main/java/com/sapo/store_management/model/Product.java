@@ -46,18 +46,16 @@ public class Product {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime updated_at;
 
-    @ManyToOne
-    @JoinColumn(name = "brand_id", nullable = false, referencedColumnName = "id")
-    private Brand brand;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
-    private Category category;
-
-
+  @ManyToOne
+  @JoinColumn(name = "brand_id", nullable = true, referencedColumnName = "id")
+  private Brand brand;
 
   @ManyToOne
-  @JoinColumn(name = "tag_id", nullable = false)
+  @JoinColumn(name = "category_id", nullable = true, referencedColumnName = "id")
+  private Category category;
+
+  @ManyToOne
+  @JoinColumn(name = "tag_id", nullable = true)
   private Tag tag;
 
 

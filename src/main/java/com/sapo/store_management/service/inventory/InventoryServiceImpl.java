@@ -6,7 +6,7 @@ import com.sapo.store_management.dto.inventory.InventoryResponse;
 import com.sapo.store_management.mapper.InventoryMapper;
 import com.sapo.store_management.model.Inventory;
 import com.sapo.store_management.repository.InventoryRepository;
-import com.sapo.store_management.service.ProductService;
+import com.sapo.store_management.service.product.ProductService;
 import com.sapo.store_management.service.storage.StorageService;
 import com.sapo.store_management.service.supplier.SupplierService;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class InventoryServiceImpl implements InventoryService {
     public InventoryResponse createInventory(InventoryCreateRequest createRequest) {
         // Tìm kiếm các entity qua Service
         var storage = storageService.getStorageEntityById(createRequest.getStorageId());
-        var product = productService.getProductById(createRequest.getProductId());
+        var product = productService.getProductByID(createRequest.getProductId());
         var supplier = supplierService.getSupplierEntityById(createRequest.getSupplierId());
 
         // Chuyển đổi DTO sang Entity
@@ -58,7 +58,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         // Tìm kiếm các entity qua Service
         var storage = storageService.getStorageEntityById(request.getStorageId());
-        var product = productService.getProductById(request.getProductId());
+        var product = productService.getProductByID(request.getProductId());
         var supplier = supplierService.getSupplierEntityById(request.getSupplierId());
 
         // Cập nhật Entity

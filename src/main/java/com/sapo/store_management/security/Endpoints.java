@@ -12,7 +12,9 @@ public class Endpoints {
 
             "/api/brand/**",
             "/api/category/**",
-            "/api/tag/**"
+            "/api/tag/**",
+            "/api/product/**",
+             "/api/product/by-tag/**"
 
 
     };
@@ -20,20 +22,23 @@ public class Endpoints {
             "/api/test/admin/**",
             "/api/brand/**",
             "/api/category/**",
-            "/api/tag/**"
+            "/api/tag/**",
+            "/api/product/**"
     };
     public static String[] ADMIN_PUT_ENDPOINT = {
             "/api/test/admin/**",
             "/api/brand/**",
             "/api/category/**",
-            "/api/tag/**"
+            "/api/tag/**",
+            "/api/product/**"
 
     };
     public static String[] ADMIN_DELETE_ENDPOINT = {
             "/api/test/admin/**",
             "/api/brand/**",
             "/api/category/**",
-            "/api/tag/**"
+            "/api/tag/**",
+            "/api/product/**"
     };
     public static String[] STAFF_GET_ENDPOINT = {
             "/api/test/staff/**"
