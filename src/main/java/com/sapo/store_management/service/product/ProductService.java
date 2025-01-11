@@ -1,11 +1,14 @@
 package com.sapo.store_management.service.product;
 
+import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
 import com.sapo.store_management.model.Product;
+import com.sapo.store_management.model.Variant;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService {
 
@@ -19,8 +22,11 @@ public interface ProductService {
 
     void deleteProductResponse(Integer id);
 
-    Product getProductByID(Integer id);
 
     List<ProductResponse> getProductsByTagName(String tagName);
+
+   ProductResponse generateVariantsForProduct(Product product , List<OptionRequest> inputOptions);
+
+   Product getProductById(Integer id);
 
 }

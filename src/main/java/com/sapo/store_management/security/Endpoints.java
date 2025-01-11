@@ -93,7 +93,8 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/product/**"
+            "/api/product/**",
+            "/api/product/generate-variants/**"
     };
 
 

@@ -28,7 +28,7 @@ public class BrandController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BrandResponse> getBrandById(@Valid @PathVariable Integer id) {
+    public ResponseEntity<BrandResponse> getBrandById( @PathVariable Integer id) {
         BrandResponse brandResponse = brandService.getBrandById(id);
         if (brandResponse != null) {
             return ResponseEntity.ok(brandResponse);

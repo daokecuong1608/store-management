@@ -1,11 +1,10 @@
 package com.sapo.store_management.mapper;
 
+import com.sapo.store_management.dto.option.OptionResponse;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
-import com.sapo.store_management.model.Brand;
-import com.sapo.store_management.model.Category;
-import com.sapo.store_management.model.Product;
-import com.sapo.store_management.model.Tag;
+import com.sapo.store_management.dto.variant.VariantResponse;
+import com.sapo.store_management.model.*;
 import com.sapo.store_management.repository.BrandRepo;
 import com.sapo.store_management.repository.CategoryRepo;
 import com.sapo.store_management.repository.TagRepo;
@@ -13,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ProductMapper {
@@ -48,10 +49,37 @@ public class ProductMapper {
         // Set tag name
         response.setTag_name(product.getTag() != null ? product.getTag().getName() : "");
 
+        // Convert Option list to OptionResponse list if options are not empty
+        List<OptionResponse> optionResponses = (product.getOptions() != null && !product.getOptions().isEmpty()) ?
+                product.getOptions().stream()
+                        .map(option -> OptionResponse.builder()
+                                .id(option.getId())
+                                .name(option.getName())
+                                .values(option.getValues().stream()
+                                        .map(value -> value.getName())  // Map Value names to a list of strings
+                                        .collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList())
+                :
+                List.of();
+        response.setOptions(optionResponses);
+
+        // Convert Variant list to VariantResponse list if variants are not empty
+        List<VariantResponse> variantResponses = (product.getVariants() != null && !product.getVariants().isEmpty()) ?
+                product.getVariants().stream()
+                        .map(variant -> VariantResponse.builder()
+                                .variantDescription(String.join("-", variant.getValues())) // Combine option values (e.g., "S-Đỏ")
+                                .price(variant.getPrice())
+                                .build())
+                        .collect(Collectors.toList())
+                :
+                List.of();
+        response.setVariants(variantResponses);
+
         return response;
     }
 
-    public  Product convertProduct(ProductRequest productRequest) {
+    public Product convertProduct(ProductRequest productRequest) {
         Product product = new Product();
         product.setCode(productRequest.getCode());
         product.setName(productRequest.getName());

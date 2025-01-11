@@ -1,7 +1,10 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
+import com.sapo.store_management.model.Product;
+import com.sapo.store_management.model.Variant;
 import com.sapo.store_management.service.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -37,7 +40,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> insertProduct(@RequestBody ProductRequest product) {
+    public ResponseEntity<ProductResponse> insertProduct(@Valid @RequestBody ProductRequest product) {
         ProductResponse insert = productService.createProductResponse(product);
         if (product != null) {
             return ResponseEntity.ok(insert);
@@ -47,7 +50,7 @@ public class ProductController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@Valid @PathVariable Integer id, @RequestBody ProductRequest productDTO) {
+    public ResponseEntity<ProductResponse> updateProduct( @PathVariable Integer id,@Valid @RequestBody ProductRequest productDTO) {
 
         ProductResponse dto = productService.updateProductResponse(id, productDTO);
         if (dto != null) {
@@ -67,6 +70,21 @@ public class ProductController {
     public ResponseEntity<List<ProductResponse>> getProductsByTagName(@RequestParam String tagName) {
         List<ProductResponse> products = productService.getProductsByTagName(tagName);
         return ResponseEntity.ok(products);
+    }
+
+    @PutMapping("/generate-variants/{id}")
+    public ResponseEntity<?> generateVariantsForProduct(@PathVariable Integer id,@Valid @RequestBody List<OptionRequest> inpuOptionRequests) {
+        try {
+            Product product = productService.getProductById(id);
+            if (product == null) {
+                return ResponseEntity.notFound().build();
+            }
+            // Tạo các variant từ inputOptions và cập nhật sản phẩm
+            ProductResponse productResponse = productService.generateVariantsForProduct(product, inpuOptionRequests);
+            return ResponseEntity.ok(productResponse);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
 }

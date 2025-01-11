@@ -37,7 +37,7 @@ public class InventoryServiceImpl implements InventoryService {
     public InventoryResponse createInventory(InventoryCreateRequest createRequest) {
         // Tìm kiếm các entity qua Service
         var storage = storageService.getStorageEntityById(createRequest.getStorageId());
-        var product = productService.getProductByID(createRequest.getProductId());
+        var product = productService.getProductById(createRequest.getProductId());
         var supplier = supplierService.getSupplierEntityById(createRequest.getSupplierId());
 
         // Chuyển đổi DTO sang Entity
@@ -58,7 +58,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         // Tìm kiếm các entity qua Service
         var storage = storageService.getStorageEntityById(request.getStorageId());
-        var product = productService.getProductByID(request.getProductId());
+        var product = productService.getProductById(request.getProductId());
         var supplier = supplierService.getSupplierEntityById(request.getSupplierId());
 
         // Cập nhật Entity

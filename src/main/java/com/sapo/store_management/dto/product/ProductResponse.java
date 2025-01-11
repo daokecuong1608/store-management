@@ -1,11 +1,14 @@
 package com.sapo.store_management.dto.product;
 
+import com.sapo.store_management.dto.option.OptionResponse;
+import com.sapo.store_management.dto.variant.VariantResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,4 +28,6 @@ public class ProductResponse {
     private String brand_name;
     private String category_name;
     private String tag_name;
+    private List<OptionResponse> options;
+    private List<VariantResponse> variants;
 }

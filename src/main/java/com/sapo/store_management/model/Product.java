@@ -59,6 +59,13 @@ public class Product {
   private Tag tag;
 
 
+  @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL ,fetch = FetchType.EAGER)
+  private List<Option> options;
+
+
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+  private List<Variant> variants;
+
   @PrePersist
     public void prePersist() {
         this.created_at = LocalDateTime.now();

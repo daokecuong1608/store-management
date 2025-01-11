@@ -46,8 +46,8 @@ public class TagControlller {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TagResponse> updateTad(@Valid @PathVariable Integer id, @RequestBody TagRequest tagRequest) {
-        TagResponse request = tagService.update(id , tagRequest);
+    public ResponseEntity<TagResponse> updateTad(@PathVariable Integer id, @Valid @RequestBody TagRequest tagRequest) {
+        TagResponse request = tagService.update(id, tagRequest);
         if (request != null) {
             return ResponseEntity.ok(request);
         }
