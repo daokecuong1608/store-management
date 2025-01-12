@@ -19,4 +19,6 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
     @Query("SELECT p FROM Product p WHERE p.tag.name = :tagName")
     List<Product> findByTagName(@Param("tagName") String tagName);
 
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(:productName)")
+    Page<Product> findByProductName(@Param("productName")  String productName , Pageable pageable);
 }

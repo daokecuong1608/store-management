@@ -61,4 +61,14 @@ public class BrandController {
         // Trả về phản hồi thành công (mã HTTP 204)
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-name")
+    public ResponseEntity<Page<BrandResponse>> findByNameBrand(
+            @RequestParam String brandName,
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Page<BrandResponse> brands = brandService.findByNameBrand(brandName, page, size, sortBy);
+        return ResponseEntity.ok(brands);
+    }
 }

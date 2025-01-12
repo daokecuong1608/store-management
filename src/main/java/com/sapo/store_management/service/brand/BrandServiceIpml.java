@@ -63,4 +63,12 @@ public class BrandServiceIpml implements BranhService {
                 .orElseThrow(() -> new RuntimeException("Could not find brand with id: " + id));
         brandRepo.delete(brand);
     }
+
+    @Override
+    public Page<BrandResponse> findByNameBrand(String brandName , int page , int size , String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        String formatBrandName = "%" + brandName + "%";
+        Page<Brand> brand = brandRepo.findByNameBrand( formatBrandName, pageable);
+        return brand.map(BrandMapper::convertEntity);
+    }
 }

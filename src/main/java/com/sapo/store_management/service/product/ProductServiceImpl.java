@@ -59,10 +59,66 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProductResponse(Integer id, ProductRequest productRequest) {
-        Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
-        Product update = productMapper.convertProduct(productRequest);
-        update = productRepo.save(update);
-        return ProductMapper.convertProductResponse(update);
+        Product update = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
+        Product product = productMapper.convertProduct(productRequest);
+        // Kiểm tra và xử lý các Option
+        List<OptionRequest> inputOptions = productRequest.getOptions();
+        if (inputOptions != null && !inputOptions.isEmpty()) {
+            // Nếu có Option mới được truyền vào, xóa các Option cũ và cập nhật lại
+            product.setOptions(new ArrayList<>());
+            List<Option> updatedOptions = new ArrayList<>();
+            for (OptionRequest inputOption : inputOptions) {
+                Option option = new Option();
+                option.setName(inputOption.getName());
+                option.setProduct(product);
+                List<Value> updateValues = new ArrayList<>();
+                for (String valueName : inputOption.getValues()) {
+                    Value value = new Value();
+                    value.setName(valueName);
+                    value.setOption(option);
+                    updateValues.add(value);
+                }
+                option.setValues(updateValues);
+                updatedOptions.add(option);
+            }
+            // Cập nhật các Option mới cho sản phẩm
+            product.setOptions(updatedOptions);
+        }
+        // Lưu thông tin sản phẩm với các Option đã cập nhật
+        productRepo.save(product);
+        // Nếu có Option mới, tạo các Variant dựa trên Option và Value
+        List<Variant> variants = new ArrayList<>();
+        if (inputOptions != null && !inputOptions.isEmpty()) {
+            // Tạo các Variant chỉ khi có Option
+            List<List<String>> allOptionValues = product.getOptions()
+                    .stream()
+                    .map(o -> o.getValues().stream().map(Value::getName)
+                            .collect(Collectors.toList()))
+                    .collect(Collectors.toList());
+
+            List<List<String>> combinations = cartesianProduct(allOptionValues);
+            for (List<String> combination : combinations) {
+                Variant variant = Variant.builder()
+                        .product(product)
+                        .values(combination)
+                        .price(product.getPrice())
+                        .build();
+                variants.add(variant);
+            }
+            // Lưu tất cả các variants vào cơ sở dữ liệu
+            variantRepo.saveAll(variants);
+        }
+
+        // Chuyển đổi Product thành ProductResponse và thiết lập variants
+        ProductResponse response = ProductMapper.convertProductResponse(product);
+        response.setVariants(variants.stream()
+                .map(variant -> VariantResponse.builder()
+                        .variantDescription(String.join("-", variant.getValues()))  // Combine option values (e.g., "S-Đỏ")
+                        .price(variant.getPrice())
+                        .build())
+                .collect(Collectors.toList()));
+
+        return response;
 
     }
 
@@ -140,7 +196,7 @@ public class ProductServiceImpl implements ProductService {
         variantRepo.saveAll(variants);
 
         // Chuyển đổi Product thành ProductResponse và thiết lập variants
-      ProductResponse response = ProductMapper.convertProductResponse(product);
+        ProductResponse response = ProductMapper.convertProductResponse(product);
         response.setVariants(variants.stream()
                 .map(variant -> VariantResponse.builder()
                         .variantDescription(String.join("-", variant.getValues()))  // Combine option values (e.g., "S-Đỏ")
@@ -172,4 +228,11 @@ public class ProductServiceImpl implements ProductService {
         return result;
     }
 
+    @Override
+    public Page<ProductResponse> getProductByName(String productName, int page, int size, String sortBy) {
+        String formatProductName = "%" + productName.toLowerCase() + "%";
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        Page<Product> response = productRepo.findByProductName(formatProductName, pageable);
+        return response.map(ProductMapper::convertProductResponse);
+    }
 }

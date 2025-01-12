@@ -50,7 +50,7 @@ public class ProductController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct( @PathVariable Integer id,@Valid @RequestBody ProductRequest productDTO) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Integer id, @Valid @RequestBody ProductRequest productDTO) {
 
         ProductResponse dto = productService.updateProductResponse(id, productDTO);
         if (dto != null) {
@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     @PutMapping("/generate-variants/{id}")
-    public ResponseEntity<?> generateVariantsForProduct(@PathVariable Integer id,@Valid @RequestBody List<OptionRequest> inpuOptionRequests) {
+    public ResponseEntity<?> generateVariantsForProduct(@PathVariable Integer id, @Valid @RequestBody List<OptionRequest> inpuOptionRequests) {
         try {
             Product product = productService.getProductById(id);
             if (product == null) {
@@ -85,6 +85,16 @@ public class ProductController {
         } catch (RuntimeException ex) {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
+    }
+
+
+    @GetMapping("/by-name")
+    public ResponseEntity<Page<ProductResponse>> getProductByName(@RequestParam String productName, @RequestParam int page, @RequestParam int size, @RequestParam(defaultValue = "name") String sortBy) {
+        Page<ProductResponse> product = productService.getProductByName(productName, page, size, sortBy);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(product);
     }
 
 }

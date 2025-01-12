@@ -16,4 +16,5 @@ public interface BranhService {
 
     void deleteBrand(Integer id);
 
+    Page<BrandResponse> findByNameBrand(String brandName , int page , int size , String sortBy);
 }

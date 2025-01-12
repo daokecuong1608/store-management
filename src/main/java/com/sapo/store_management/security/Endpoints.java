@@ -72,7 +72,10 @@ public class Endpoints {
             "/api/category/**",
             "/api/tag/**",
             "/api/product/**",
-            "/api/product/by-tag/**"
+            "/api/product/by-tag/**",
+            "/api/product/by-name/**",
+            "/api/tag/by-name/**"
+
     };
     public static String[] PUBLIC_POST_ENDPOINT = {
             "/api/test/admin/**",

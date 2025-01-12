@@ -29,4 +29,6 @@ public interface ProductService {
 
    Product getProductById(Integer id);
 
+   Page<ProductResponse> getProductByName(String productName , int page , int size , String sortBy);
+
 }
