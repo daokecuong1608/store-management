@@ -5,12 +5,11 @@ import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
 import com.sapo.store_management.dto.variant.VariantResponse;
 import com.sapo.store_management.mapper.ProductMapper;
-import com.sapo.store_management.model.Option;
-import com.sapo.store_management.model.Product;
-import com.sapo.store_management.model.Value;
-import com.sapo.store_management.model.Variant;
-import com.sapo.store_management.repository.ProductRepo;
-import com.sapo.store_management.repository.VariantRepo;
+import com.sapo.store_management.model.*;
+import com.sapo.store_management.repository.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +29,16 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     private final ProductRepo productRepo;
     private final VariantRepo variantRepo;
+    private final BrandRepo brandRepo;
+    private final CategoryRepo categoryRepo;
+    private final TagRepo tagRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo, CategoryRepo categoryRepo, TagRepo tagRepo) {
         this.productRepo = productRepo;
         this.variantRepo = variantRepo;
+        this.brandRepo = brandRepo;
+        this.categoryRepo = categoryRepo;
+        this.tagRepo = tagRepo;
     }
 
     @Override
@@ -59,8 +64,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse updateProductResponse(Integer id, ProductRequest productRequest) {
-        Product update = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
-        Product product = productMapper.convertProduct(productRequest);
+        Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
+        product.setCode(productRequest.getCode());
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setCapital_price(productRequest.getCapital_price());
+        product.setImage(productRequest.getImage());
+        product.setStatus(productRequest.isStatus());
+        if (productRequest.getBrand() != null) {
+            Brand brand = brandRepo.findById(productRequest.getBrand()).orElseThrow(null);
+            product.setBrand(brand);
+        }
+        if (productRequest.getCategories() != null && !productRequest.getCategories().isEmpty()) {
+            List<Category> categories = categoryRepo.findAllById(productRequest.getCategories());
+            if (categories != null && !categories.isEmpty()) {
+                product.setCategories(categories);
+            } else {
+                product.setCategories(null);
+            }
+        }
+        if (productRequest.getTags() != null && !productRequest.getTags().isEmpty()){
+            List<Tag> tags = tagRepo.findAllById(productRequest.getTags());
+            if (tags!= null &&!tags.isEmpty()) {
+                product.setTags(tags);
+            } else {
+                product.setTags(null);
+            }
+        }
         // Kiểm tra và xử lý các Option
         List<OptionRequest> inputOptions = productRequest.getOptions();
         if (inputOptions != null && !inputOptions.isEmpty()) {
