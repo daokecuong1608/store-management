@@ -26,8 +26,8 @@ public class ProductResponse {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private String brand_name;
-    private String category_name;
-    private String tag_name;
+    private List<String> categories_name;
+    private List<String> tags_name;
     private List<OptionResponse> options;
     private List<VariantResponse> variants;
 }

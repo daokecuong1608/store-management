@@ -22,7 +22,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<Page<ProductResponse>> getlAllProducts(@RequestParam int page,
                                                                  @RequestParam int size,
                                                                  @RequestParam(defaultValue = "id") String sortBy) {

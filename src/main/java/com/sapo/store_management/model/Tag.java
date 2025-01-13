@@ -2,12 +2,7 @@ package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.cglib.core.Local;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,9 +26,7 @@ public class Tag {
     @Column(name = "updated_at",  columnDefinition = "TIMESTAMP")
     private LocalDateTime updated_at;
 
-
-
-    @OneToMany(mappedBy = "tag", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @ManyToMany(mappedBy = "tags")
     private List<Product> products;
 
 

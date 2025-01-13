@@ -44,10 +44,20 @@ public class ProductMapper {
         response.setBrand_name(product.getBrand() != null ? product.getBrand().getName() : "");
 
         // Set category name
-        response.setCategory_name(product.getCategory() != null ? product.getCategory().getName() : "");
-
-        // Set tag name
-        response.setTag_name(product.getTag() != null ? product.getTag().getName() : "");
+        List<String> categories = (product.getCategories() != null && !product.getCategories().isEmpty()) ?
+                product.getCategories().stream()
+                        .map(Category::getName)
+                        .collect(Collectors.toList())
+                :
+                List.of();
+        response.setCategories_name(categories);
+        List<String> tags = (product.getTags() != null && !product.getTags().isEmpty()) ?
+                product.getTags().stream()
+                        .map(Tag::getName)
+                        .collect(Collectors.toList())
+                :
+                List.of();
+        response.setTags_name(tags);
 
         // Convert Option list to OptionResponse list if options are not empty
         List<OptionResponse> optionResponses = (product.getOptions() != null && !product.getOptions().isEmpty()) ?
@@ -96,15 +106,13 @@ public class ProductMapper {
                     .orElse(null);
             product.setBrand(brand);
         }
-        if (productRequest.getCategory() != null) {
-            Category category = categoryRepo.findById(productRequest.getCategory())
-                    .orElse(null);
-            product.setCategory(category);
+        if (productRequest.getCategories() != null && !productRequest.getCategories().isEmpty()) {
+            List<Category> categories = categoryRepo.findAllById(productRequest.getCategories());
+            product.setCategories(categories);
         }
-        if (productRequest.getTag() != null) {
-            Tag tag = tagRepo.findById(productRequest.getTag())
-                    .orElse(null);
-            product.setTag(tag);
+        if (productRequest.getTags() != null && !productRequest.getTags().isEmpty()) {
+            List<Tag> tags = tagRepo.findAllById(productRequest.getTags());
+            product.setTags(tags);
         }
 
         return product;

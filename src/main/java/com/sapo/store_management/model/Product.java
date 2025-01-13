@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -50,13 +51,21 @@ public class Product {
   @JoinColumn(name = "brand_id", nullable = true, referencedColumnName = "id")
   private Brand brand;
 
-  @ManyToOne
-  @JoinColumn(name = "category_id", nullable = true, referencedColumnName = "id")
-  private Category category;
+  @ManyToMany
+  @JoinTable(
+          name = "tbl_product_category",
+          joinColumns = @JoinColumn(name = "product_id"),
+          inverseJoinColumns = @JoinColumn(name = "category_id")
+  )
+  private List<Category> categories;
 
-  @ManyToOne
-  @JoinColumn(name = "tag_id", nullable = true)
-  private Tag tag;
+  @ManyToMany
+  @JoinTable(
+          name = "tbl_product_tag",
+          joinColumns = @JoinColumn(name = "product_id"),
+          inverseJoinColumns = @JoinColumn(name = "tag_id")
+  )
+  private List<Tag> tags;
 
 
   @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL ,fetch = FetchType.EAGER)

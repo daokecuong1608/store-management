@@ -2,12 +2,8 @@ package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Entity
 @Builder
@@ -28,6 +24,10 @@ public class Category {
 
     @Column(name = "updated_at" , columnDefinition = "TIMESTAMP")
     private LocalDateTime updated_at;
+
+    @ManyToMany(mappedBy = "categories")
+    private List<Product> products;
+
 
     @PrePersist
     public void prePersist() {

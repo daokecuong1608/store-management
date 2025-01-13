@@ -30,7 +30,7 @@ public class ProductRequest {
     private String image;
     private boolean status;
     private Integer brand;
-    private Integer category;
-    private Integer tag;
+    private List<Integer> categories;
+    private List<Integer> tags;
     private List<OptionRequest> options;
 }
