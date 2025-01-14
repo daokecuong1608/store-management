@@ -1,5 +1,6 @@
 package com.sapo.store_management.dto.option;
 
+import com.sapo.store_management.dto.value.ValuesResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,5 @@ import java.util.List;
 public class OptionResponse {
     private Integer id;
     private String name;
-    private List<String> values;
+    private List<ValuesResponse> values;
 }

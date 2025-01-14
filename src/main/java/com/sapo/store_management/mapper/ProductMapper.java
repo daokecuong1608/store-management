@@ -1,8 +1,11 @@
 package com.sapo.store_management.mapper;
 
+import com.sapo.store_management.dto.category.CategoryResponse;
 import com.sapo.store_management.dto.option.OptionResponse;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
+import com.sapo.store_management.dto.tag.TagResponse;
+import com.sapo.store_management.dto.value.ValuesResponse;
 import com.sapo.store_management.dto.variant.VariantResponse;
 import com.sapo.store_management.model.*;
 import com.sapo.store_management.repository.BrandRepo;
@@ -41,19 +44,21 @@ public class ProductMapper {
         response.setUpdated_at(product.getUpdated_at());
 
         // Set brand name
-        response.setBrand_name(product.getBrand() != null ? product.getBrand().getName() : "");
-
+        response.setBrandResponse(product.getBrand() != null ?
+                BrandMapper.convertEntity(product.getBrand())
+                : null);
         // Set category name
-        List<String> categories = (product.getCategories() != null && !product.getCategories().isEmpty()) ?
+        List<CategoryResponse> categories = (product.getCategories() != null && !product.getCategories().isEmpty()) ?
                 product.getCategories().stream()
-                        .map(Category::getName)
+                        .map(CategoryMapper::convertEntity)
                         .collect(Collectors.toList())
                 :
                 List.of();
-        response.setCategories_name(categories);
-        List<String> tags = (product.getTags() != null && !product.getTags().isEmpty()) ?
+        response.setCategoryResponses(categories);
+
+        List<TagResponse> tags = (product.getTags() != null && !product.getTags().isEmpty()) ?
                 product.getTags().stream()
-                        .map(Tag::getName)
+                        .map(TagMapper::convertTag)
                         .collect(Collectors.toList())
                 :
                 List.of();
@@ -66,13 +71,19 @@ public class ProductMapper {
                                 .id(option.getId())
                                 .name(option.getName())
                                 .values(option.getValues().stream()
-                                        .map(value -> value.getName())  // Map Value names to a list of strings
+                                        .map(value -> ValuesResponse.builder()
+                                                .id(value.getId())
+                                                .name(value.getName())
+                                                .created_at(value.getCreated_at())
+                                                .updated_at(value.getUpdated_at())
+                                                .build())
                                         .collect(Collectors.toList()))
                                 .build())
                         .collect(Collectors.toList())
                 :
                 List.of();
         response.setOptions(optionResponses);
+
 
         // Convert Variant list to VariantResponse list if variants are not empty
         List<VariantResponse> variantResponses = (product.getVariants() != null && !product.getVariants().isEmpty()) ?
