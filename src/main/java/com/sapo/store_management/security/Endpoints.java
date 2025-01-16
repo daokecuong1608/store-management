@@ -10,10 +10,10 @@ public class Endpoints {
             "/api/inventories/**",
             "/api/inventory-variants/**",
 
-            "/api/brand/**",
-            "/api/category/**",
-            "/api/tag/**",
-            "/api/product/**",
+//            "/api/brand/**",
+//            "/api/category/**",
+//            "/api/tag/**",
+//            "/api/product/**",
             "/api/product/by-tag/**"
 
 
@@ -68,6 +68,10 @@ public class Endpoints {
 
     //test
     public static String[] PUBLIC_GET_ENDPOINT = {
+            "/api/brand/getall/**",
+            "/api/category/getall/**",
+            "/api/tag/getall/**",
+            "/api/product/getall/**",
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
@@ -82,7 +86,8 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/product/**"
+            "/api/product/**",
+            "/api/image/**"
     };
     public static String[] PUBLIC_DELETE_ENDPOINT = {
             "/api/test/admin/**",
