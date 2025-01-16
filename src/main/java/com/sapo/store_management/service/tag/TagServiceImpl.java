@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -27,6 +29,16 @@ public class TagServiceImpl implements TagService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         Page<Tag> tags = tagRepo.findAll(pageable);
         return tags.map(TagMapper::convertTag);
+    }
+
+    @Override
+    public List<TagResponse> getAllTags(){
+        List<Tag> tags = tagRepo.findAll();
+        List<TagResponse> tagResponses = new ArrayList<>();
+        for(Tag tag : tags) {
+            tagResponses.add(TagMapper.convertTag(tag));
+        }
+        return tagResponses;
     }
 
     @Override

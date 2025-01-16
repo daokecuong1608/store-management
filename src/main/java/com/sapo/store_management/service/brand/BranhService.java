@@ -4,9 +4,13 @@ import com.sapo.store_management.dto.brand.BrandRequest;
 import com.sapo.store_management.dto.brand.BrandResponse;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface BranhService {
 
     Page<BrandResponse> getAllBrand(int page , int size , String sortBy);
+
+    List<BrandResponse> getAllBrands();
 
     BrandResponse getBrandById(Integer id);
 
