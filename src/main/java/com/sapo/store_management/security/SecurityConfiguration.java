@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
                         .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, Endpoints.ADMIN_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, Endpoints.ADMIN_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
@@ -65,6 +66,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, Endpoints.CSR_POST_ENDPOINT).hasAnyAuthority("ROLE_CSR")
                         .requestMatchers(HttpMethod.PUT, Endpoints.CSR_PUT_ENDPOINT).hasAnyAuthority("ROLE_CSR")
                         .requestMatchers(HttpMethod.DELETE, Endpoints.CSR_DELETE_ENDPOINT).hasAnyAuthority("ROLE_CSR"));
+//                            .anyRequest().permitAll());
         http.cors(Customizer.withDefaults());
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

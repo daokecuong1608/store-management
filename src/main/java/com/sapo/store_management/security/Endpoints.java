@@ -3,14 +3,21 @@ package com.sapo.store_management.security;
 public class Endpoints {
 
         public static String[] ADMIN_GET_ENDPOINT = {
-                        "/api/test/admin/**"
+                        "/api/test/admin/**",
+                        "/api/product/**",
+                        "/api/storages/**",
+                        "/api/suppliers/**",
+                        "/api/inventories/**",
+                        "/api/inventory-variants/**",
+                        "/api/customers/**"
         };
         public static String[] ADMIN_POST_ENDPOINT = {
-                        "/api/test/admin/**"
-
+                        "/api/test/admin/**",
+                        "/api/customers/**"
         };
         public static String[] ADMIN_PUT_ENDPOINT = {
-                        "/api/test/admin/**"
+                        "/api/test/admin/**",
+                        "/api/customers/**"
 
         };
         public static String[] ADMIN_DELETE_ENDPOINT = {
@@ -18,7 +25,8 @@ public class Endpoints {
 
         };
         public static String[] STAFF_GET_ENDPOINT = {
-                        "/api/test/staff/**"
+                        "/api/test/staff/**",
+                        "/api/customers/**"
         };
         public static String[] STAFF_POST_ENDPOINT = {
                         "/api/test/staff/**",
