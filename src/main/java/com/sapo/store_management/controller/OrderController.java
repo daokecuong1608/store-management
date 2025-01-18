@@ -26,19 +26,35 @@ public class OrderController {
         return ResponseEntity.ok(this.orderService.handleGetOrdersWithPagination(pageable));
     }
 
+    @GetMapping("/{orderID}")
+    public ResponseEntity<Order> getOrderById(@PathVariable int orderID) {
+        Order order = orderService.handleGetOrderById(orderID);
+        return ResponseEntity.ok(order);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Order> searchOrderByCode(@RequestParam String code) {
+        Order order = orderService.findByCode(code);
+        if (order != null) {
+            return ResponseEntity.ok(order);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PostMapping("/")
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest orderRequest) {
         Order createdOrder = orderService.handleCreateOrder(orderRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
-    @PutMapping("{orderID}")
+    @PutMapping("/{orderID}")
     public ResponseEntity<Order> updateOrder(@Valid @PathVariable int orderID, @RequestBody OrderRequest orderRequest) {
         Order updatedOrder = orderService.handleUpdateOrder(orderID, orderRequest);
         return ResponseEntity.ok(updatedOrder);
     }
 
-    @DeleteMapping("{orderID}")
+    @DeleteMapping("/{orderID}")
     public ResponseEntity<Void> deleteOrder(@PathVariable int orderID) {
         orderService.handleDeleteOrder(orderID);
         return ResponseEntity.noContent().build();

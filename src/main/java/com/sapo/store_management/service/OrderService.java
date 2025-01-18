@@ -1,6 +1,7 @@
 package com.sapo.store_management.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     public OrderService(OrderRepository orderRepository, OrderProductRepository orderProductRepository,
-                        ProductRepository productRepository) {
+            ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository = orderProductRepository;
         this.productRepository = productRepository;
@@ -42,6 +43,7 @@ public class OrderService {
         order.setPayment(orderRequest.getPayment());
         order.setChange_given(orderRequest.getChange_given());
         order.setStatus("ĐÃ THANH TOÁN");
+        order.setNote(orderRequest.getNote());
 
         // Lưu đơn hàng lần đầu để sinh ID
         Order savedOrder = orderRepository.save(order);
@@ -74,6 +76,19 @@ public class OrderService {
         return this.orderRepository.findAll(pageable);
     }
 
+    public Order handleGetOrderById(int orderID) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderID);
+        if (optionalOrder.isPresent()) {
+            return optionalOrder.get();
+        } else {
+            return null;
+        }
+    }
+
+    public Order findByCode(String code) {
+        return orderRepository.findByCode(code);
+    }
+
     @Transactional
     public Order handleUpdateOrder(int orderId, OrderRequest orderRequest) {
         Order existingOrder = orderRepository.findById(orderId)
@@ -89,17 +104,19 @@ public class OrderService {
         existingOrder.setTotal(orderRequest.getTotal());
         existingOrder.setPayment(orderRequest.getPayment());
         existingOrder.setChange_given(orderRequest.getChange_given());
+        existingOrder.setNote(orderRequest.getNote());
 
         List<OrderProduct> updateOrderProducts = orderRequest.getProducts().stream()
                 .map(pro -> {
                     OrderProduct orderProduct = new OrderProduct();
                     orderProduct.setOrder(existingOrder);
-                    orderProduct.setProduct(productRepository.findById(pro.getProductId()).orElseThrow(() -> new RuntimeException("Not find")));
+                    orderProduct.setProduct(productRepository.findById(pro.getProductId())
+                            .orElseThrow(() -> new RuntimeException("Not find")));
                     orderProduct.setQuantity(pro.getQuantity());
                     orderProduct.setPrice(pro.getPrice());
                     return orderProduct;
                 }).collect(Collectors.toList());
-        System.out.println(" getOrderProducts :  " +existingOrder.getOrderProducts().toString() );
+        System.out.println(" getOrderProducts :  " + existingOrder.getOrderProducts().toString());
         orderProductRepository.deleteAll(existingOrder.getOrderProducts());
 
         orderProductRepository.saveAll(updateOrderProducts);
@@ -118,6 +135,5 @@ public class OrderService {
 
         orderRepository.delete(order);
     }
-
 
 }

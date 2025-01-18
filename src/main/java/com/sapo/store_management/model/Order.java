@@ -51,6 +51,8 @@ public class Order {
 
     private String status;
 
+    private String note;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+7")
     private Instant created_at;
 

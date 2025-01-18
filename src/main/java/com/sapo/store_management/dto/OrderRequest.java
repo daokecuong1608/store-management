@@ -18,6 +18,8 @@ public class OrderRequest {
 
     private int staff_id;
 
+    private String note;
+
     @Min(value = 0, message = "Total phải lớn hơn hoặc bằng 0")
     private int total;
 

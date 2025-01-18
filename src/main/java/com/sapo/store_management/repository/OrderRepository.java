@@ -13,4 +13,6 @@ import org.springframework.lang.NonNull;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @NonNull
     Page<Order> findAll(@NonNull Pageable pageable);
+
+    Order findByCode(String code);
 }
