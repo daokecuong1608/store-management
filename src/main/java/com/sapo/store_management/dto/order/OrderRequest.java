@@ -1,4 +1,4 @@
-package com.sapo.store_management.dto;
+package com.sapo.store_management.dto.order;
 
 import java.util.List;
 

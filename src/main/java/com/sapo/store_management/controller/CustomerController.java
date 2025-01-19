@@ -26,15 +26,21 @@ public class CustomerController {
     public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
         return customerService.updateCustomer(id, customerDTO);
     }
-//
-//    @DeleteMapping("/{id}")
-//    public void deleteCustomer(@PathVariable Long id) {
-//        customerService.deleteCustomer(id);
-//    }
-//
+
+    //
+    // @DeleteMapping("/{id}")
+    // public void deleteCustomer(@PathVariable Long id) {
+    // customerService.deleteCustomer(id);
+    // }
+    //
     @GetMapping
     public List<CustomerDTO> getAllCustomers() {
         return customerService.getAllCustomers();
+    }
+
+    @GetMapping("/search")
+    public List<CustomerDTO> searchCustomers(@RequestParam String keyword) {
+        return customerService.searchCustomers(keyword);
     }
 
 }

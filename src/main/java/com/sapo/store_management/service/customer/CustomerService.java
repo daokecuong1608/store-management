@@ -41,11 +41,18 @@ public class CustomerService {
         Customer savedCustomer = customerRepository.save(updatedCustomer);
         return customerMapper.toDTO(savedCustomer);
     }
-//
-//    public void deleteCustomer(Long id) {
-//        Customer customer = customerRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//        customerRepository.delete(customer);
-//    }
+    //
+    // public void deleteCustomer(Long id) {
+    // Customer customer = customerRepository.findById(id)
+    // .orElseThrow(() -> new RuntimeException("Customer not found"));
+    // customerRepository.delete(customer);
+    // }
+
+    public List<CustomerDTO> searchCustomers(String keyword) {
+        return customerRepository.findByFullnameContainingOrPhoneContaining(keyword, keyword)
+                .stream()
+                .map(customerMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
 }

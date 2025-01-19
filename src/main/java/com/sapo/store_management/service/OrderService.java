@@ -1,18 +1,22 @@
 package com.sapo.store_management.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.sapo.store_management.dto.OrderRequest;
+import com.sapo.store_management.dto.order.OrderDTO;
+import com.sapo.store_management.dto.order.OrderRequest;
+import com.sapo.store_management.mapper.CustomerMapper;
+import com.sapo.store_management.mapper.UserMapper;
 import com.sapo.store_management.model.Order;
 import com.sapo.store_management.model.OrderProduct;
+import com.sapo.store_management.repository.CustomerRepository;
 import com.sapo.store_management.repository.OrderProductRepository;
 import com.sapo.store_management.repository.OrderRepository;
 import com.sapo.store_management.repository.ProductRepository;
+import com.sapo.store_management.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -21,12 +25,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
+    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository, OrderProductRepository orderProductRepository,
-            ProductRepository productRepository) {
+            ProductRepository productRepository, CustomerRepository customerRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.orderProductRepository = orderProductRepository;
         this.productRepository = productRepository;
+        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -45,15 +53,12 @@ public class OrderService {
         order.setStatus("ĐÃ THANH TOÁN");
         order.setNote(orderRequest.getNote());
 
-        // Lưu đơn hàng lần đầu để sinh ID
         Order savedOrder = orderRepository.save(order);
 
-        // Tạo mã đơn hàng dựa trên ID
         String orderCode = String.format("#%04d", savedOrder.getId());
         savedOrder.setCode(orderCode);
-        orderRepository.save(savedOrder); // Lưu lại mã đơn hàng với mã mới
+        orderRepository.save(savedOrder);
 
-        // Xử lý sản phẩm trong đơn hàng
         List<OrderProduct> orderProducts = orderRequest.getProducts().stream()
                 .map(req -> {
                     OrderProduct orderProduct = new OrderProduct();
@@ -72,17 +77,66 @@ public class OrderService {
         return savedOrder;
     }
 
-    public Page<Order> handleGetOrdersWithPagination(Pageable pageable) {
-        return this.orderRepository.findAll(pageable);
+    public Page<OrderDTO> handleGetOrdersWithPagination(Pageable pageable) {
+
+        Page<Order> orders = orderRepository.findAll(pageable);
+
+        return orders.map(order -> {
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
+            orderDTO.setCustomer_id(order.getCustomer_id());
+            orderDTO.setCoupon_id(order.getCoupon_id());
+            orderDTO.setStaff_id(order.getStaff_id());
+            orderDTO.setCode(order.getCode());
+            orderDTO.setTotal(order.getTotal());
+            orderDTO.setPayment(order.getPayment());
+            orderDTO.setChange_given(order.getChange_given());
+            orderDTO.setStatus(order.getStatus());
+            orderDTO.setNote(order.getNote());
+            orderDTO.setCreated_at(order.getCreated_at());
+            orderDTO.setUpdated_at(order.getUpdated_at());
+            orderDTO.setOrderProducts(order.getOrderProducts());
+
+            UserMapper userMapper = new UserMapper();
+            userRepository.findById(order.getStaff_id())
+                    .ifPresent(user -> orderDTO.setStaff(userMapper.toDTO(user)));
+
+            CustomerMapper customerMapper = new CustomerMapper();
+            customerRepository.findById(order.getCustomer_id())
+                    .ifPresent(customer -> orderDTO.setCustomer(customerMapper.toDTO(customer)));
+            return orderDTO;
+        });
     }
 
-    public Order handleGetOrderById(int orderID) {
-        Optional<Order> optionalOrder = orderRepository.findById(orderID);
-        if (optionalOrder.isPresent()) {
-            return optionalOrder.get();
-        } else {
-            return null;
-        }
+    public OrderDTO handleGetOrderById(int orderID) {
+        return orderRepository.findById(orderID)
+                .map(order -> {
+                    OrderDTO orderDTO = new OrderDTO();
+                    orderDTO.setId(order.getId());
+                    orderDTO.setCustomer_id(order.getCustomer_id());
+                    orderDTO.setCoupon_id(order.getCoupon_id());
+                    orderDTO.setStaff_id(order.getStaff_id());
+                    orderDTO.setCode(order.getCode());
+                    orderDTO.setTotal(order.getTotal());
+                    orderDTO.setPayment(order.getPayment());
+                    orderDTO.setChange_given(order.getChange_given());
+                    orderDTO.setStatus(order.getStatus());
+                    orderDTO.setNote(order.getNote());
+                    orderDTO.setCreated_at(order.getCreated_at());
+                    orderDTO.setUpdated_at(order.getUpdated_at());
+                    orderDTO.setOrderProducts(order.getOrderProducts());
+
+                    UserMapper userMapper = new UserMapper();
+                    userRepository.findById(order.getStaff_id())
+                            .ifPresent(user -> orderDTO.setStaff(userMapper.toDTO(user)));
+
+                    CustomerMapper customerMapper = new CustomerMapper();
+                    customerRepository.findById(order.getCustomer_id())
+                            .ifPresent(customer -> orderDTO.setCustomer(customerMapper.toDTO(customer)));
+
+                    return orderDTO;
+                })
+                .orElseThrow(() -> new RuntimeException("Order with ID " + orderID + " not found"));
     }
 
     public Order findByCode(String code) {
@@ -136,4 +190,37 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
+    public Page<OrderDTO> searchByCodeOrPhone(String query, Pageable pageable) {
+
+        Page<Order> orders = orderRepository.searchByCodeOrCustomerPhone(query, pageable);
+
+        return orders.map(order -> {
+            OrderDTO orderDTO = new OrderDTO();
+            orderDTO.setId(order.getId());
+            orderDTO.setCustomer_id(order.getCustomer_id());
+            orderDTO.setCoupon_id(order.getCoupon_id());
+            orderDTO.setStaff_id(order.getStaff_id());
+            orderDTO.setCode(order.getCode());
+            orderDTO.setTotal(order.getTotal());
+            orderDTO.setPayment(order.getPayment());
+            orderDTO.setChange_given(order.getChange_given());
+            orderDTO.setStatus(order.getStatus());
+            orderDTO.setNote(order.getNote());
+            orderDTO.setCreated_at(order.getCreated_at());
+            orderDTO.setUpdated_at(order.getUpdated_at());
+            orderDTO.setOrderProducts(order.getOrderProducts());
+
+            userRepository.findById(order.getStaff_id()).ifPresent(user -> {
+                UserMapper userMapper = new UserMapper();
+                orderDTO.setStaff(userMapper.toDTO(user));
+            });
+
+            customerRepository.findById(order.getCustomer_id()).ifPresent(customer -> {
+                CustomerMapper customerMapper = new CustomerMapper();
+                orderDTO.setCustomer(customerMapper.toDTO(customer));
+            });
+
+            return orderDTO;
+        });
+    }
 }

@@ -56,7 +56,7 @@ public class Order {
     @JsonManagedReference
     private List<OrderProduct> orderProducts;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private Customer customer;
