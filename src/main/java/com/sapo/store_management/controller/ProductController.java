@@ -1,5 +1,6 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
@@ -22,10 +23,15 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("/all")
+    public List<ProductDTO> getlAllProducts() {
+        return productService.getAllProducts();
+    }
+
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getlAllProducts(@RequestParam int page,
-                                                                 @RequestParam int size,
-                                                                 @RequestParam(defaultValue = "id") String sortBy) {
+            @RequestParam int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
         Page<ProductResponse> product = productService.getAllProductResponse(page, size, sortBy);
         return ResponseEntity.ok(product);
     }
@@ -48,9 +54,9 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Integer id, @Valid @RequestBody ProductRequest productDTO) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Integer id,
+            @Valid @RequestBody ProductRequest productDTO) {
 
         ProductResponse dto = productService.updateProductResponse(id, productDTO);
         if (dto != null) {
@@ -58,7 +64,6 @@ public class ProductController {
         }
         return ResponseEntity.notFound().build();
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
@@ -73,7 +78,8 @@ public class ProductController {
     }
 
     @GetMapping("/by-name")
-    public ResponseEntity<Page<ProductResponse>> getProductByName(@RequestParam String productName, @RequestParam int page, @RequestParam int size, @RequestParam(defaultValue = "name") String sortBy) {
+    public ResponseEntity<Page<ProductResponse>> getProductByName(@RequestParam String productName,
+            @RequestParam int page, @RequestParam int size, @RequestParam(defaultValue = "name") String sortBy) {
         Page<ProductResponse> product = productService.getProductByName(productName, page, size, sortBy);
         if (product == null) {
             return ResponseEntity.notFound().build();

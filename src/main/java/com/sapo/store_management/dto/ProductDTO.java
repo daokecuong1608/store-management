@@ -1,6 +1,5 @@
 package com.sapo.store_management.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,8 +23,7 @@ public class ProductDTO {
 
     private String image;
 
-//    private String status;
-
+    // private String status;
 
     public String getCode() {
         return code;
@@ -75,11 +73,11 @@ public class ProductDTO {
         this.image = image;
     }
 
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
+    // public String getStatus() {
+    // return status;
+    // }
+    //
+    // public void setStatus(String status) {
+    // this.status = status;
+    // }
 }

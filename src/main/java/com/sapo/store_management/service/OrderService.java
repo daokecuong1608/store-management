@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.sapo.store_management.dto.ProductRes;
 import com.sapo.store_management.dto.order.OrderDTO;
 import com.sapo.store_management.dto.order.OrderRequest;
 import com.sapo.store_management.mapper.CustomerMapper;
@@ -95,7 +97,20 @@ public class OrderService {
             orderDTO.setNote(order.getNote());
             orderDTO.setCreated_at(order.getCreated_at());
             orderDTO.setUpdated_at(order.getUpdated_at());
-            orderDTO.setOrderProducts(order.getOrderProducts());
+            // orderDTO.setOrderProducts(order.getOrderProducts());
+
+            // Ánh xạ OrderProduct -> chỉ lấy id và name của Product
+            List<ProductRes> productDTOs = order.getOrderProducts().stream()
+                    .map(orderProduct -> {
+                        ProductRes productDTO = new ProductRes();
+                        productDTO.setId(orderProduct.getProduct().getId());
+                        productDTO.setName(orderProduct.getProduct().getName());
+                        productDTO.setQuantity(orderProduct.getQuantity());
+                        return productDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            orderDTO.setOrderProducts(productDTOs);
 
             UserMapper userMapper = new UserMapper();
             userRepository.findById(order.getStaff_id())
@@ -124,7 +139,24 @@ public class OrderService {
                     orderDTO.setNote(order.getNote());
                     orderDTO.setCreated_at(order.getCreated_at());
                     orderDTO.setUpdated_at(order.getUpdated_at());
-                    orderDTO.setOrderProducts(order.getOrderProducts());
+                    // orderDTO.setOrderProducts(order.getOrderProducts());
+
+                    List<ProductRes> productDTOs = order.getOrderProducts().stream()
+                            .map(orderProduct -> {
+                                ProductRes productDTO = new ProductRes();
+                                productDTO.setId(orderProduct.getProduct().getId());
+                                productDTO.setName(orderProduct.getProduct().getName());
+                                productDTO.setPrice(orderProduct.getProduct().getPrice());
+                                productDTO.setQuantity(orderProduct.getQuantity());
+
+                                productDTO.setImage(orderProduct.getProduct().getImages().isEmpty() ? null
+                                        : orderProduct.getProduct().getImages().get(0).getImageUrl());
+                                // productDTO.setImage(orderProduct.getProduct().getImages().get(0).getImageUrl());
+                                return productDTO;
+                            })
+                            .collect(Collectors.toList());
+
+                    orderDTO.setOrderProducts(productDTOs);
 
                     UserMapper userMapper = new UserMapper();
                     userRepository.findById(order.getStaff_id())
@@ -208,7 +240,19 @@ public class OrderService {
             orderDTO.setNote(order.getNote());
             orderDTO.setCreated_at(order.getCreated_at());
             orderDTO.setUpdated_at(order.getUpdated_at());
-            orderDTO.setOrderProducts(order.getOrderProducts());
+            // orderDTO.setOrderProducts(order.getOrderProducts());
+
+            // Ánh xạ OrderProduct -> chỉ lấy id và name của Product
+            List<ProductRes> productDTOs = order.getOrderProducts().stream()
+                    .map(orderProduct -> {
+                        ProductRes productDTO = new ProductRes();
+                        productDTO.setId(orderProduct.getProduct().getId());
+                        productDTO.setName(orderProduct.getProduct().getName());
+                        return productDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            orderDTO.setOrderProducts(productDTOs);
 
             userRepository.findById(order.getStaff_id()).ifPresent(user -> {
                 UserMapper userMapper = new UserMapper();

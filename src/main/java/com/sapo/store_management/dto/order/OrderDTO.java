@@ -3,6 +3,8 @@ package com.sapo.store_management.dto.order;
 import java.time.Instant;
 import java.util.List;
 
+import com.sapo.store_management.dto.ProductDTO;
+import com.sapo.store_management.dto.ProductRes;
 import com.sapo.store_management.dto.UserDTO;
 import com.sapo.store_management.dto.customer.CustomerDTO;
 import com.sapo.store_management.model.Customer;
@@ -44,7 +46,7 @@ public class OrderDTO {
 
     private Instant updated_at;
 
-    private List<OrderProduct> orderProducts;
+    private List<ProductRes> orderProducts;
 
     private CustomerDTO customer;
 
