@@ -40,6 +40,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void registerUser(UserRequest userRequest) {
+        System.out.println("UserRequest : " + userRequest.toString());
         if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new IllegalArgumentException("Username already exists");
         }
@@ -47,16 +48,33 @@ public class UserService implements UserDetailsService {
         newUser.setUsername(userRequest.getUsername());
         newUser.setPassword(encodePassword(userRequest.getPassword())); // Mã hóa mật khẩu
         newUser.setFullname(userRequest.getFullname());
-        newUser.setRole(userRequest.getRole() != null ? userRequest.getRole() : "ROLE_STAFF"); // Mặc định ROLE_STAFF nếu null
+        newUser.setRole(userRequest.getRole()); // Mặc định ROLE_STAFF nếu null
         newUser.setAge(userRequest.getAge());
-
         // Lưu người dùng vào cơ sở dữ liệu
         userRepository.save(newUser);
     }
-
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
 
+    public void updateUser(int id, UserRequest userRequest){
+        User user = userRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        user.setUsername(userRequest.getUsername());
+        user.setPassword(encodePassword(userRequest.getPassword()));
+        user.setFullname(userRequest.getFullname());
+        user.setAge(userRequest.getAge());
+        userRepository.save(user);
+    }
+
+    public void deleteUser(int id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        userRepository.delete(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }
 

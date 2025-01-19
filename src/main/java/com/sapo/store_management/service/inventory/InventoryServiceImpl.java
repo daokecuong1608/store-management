@@ -6,7 +6,7 @@ import com.sapo.store_management.dto.inventory.InventoryResponse;
 import com.sapo.store_management.mapper.InventoryMapper;
 import com.sapo.store_management.model.Inventory;
 import com.sapo.store_management.repository.InventoryRepository;
-import com.sapo.store_management.service.ProductService;
+import com.sapo.store_management.service.product.ProductService;
 import com.sapo.store_management.service.storage.StorageService;
 import com.sapo.store_management.service.supplier.SupplierService;
 import org.springframework.stereotype.Service;

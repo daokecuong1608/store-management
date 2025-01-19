@@ -40,7 +40,8 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
         boolean isAdmin = false;
         boolean isStaff = false;
-        boolean isCSR   = false;
+        boolean isCSR = false;
+        boolean isManager = false;
         User user = userService.findByUsername(username);
         if (user != null && user.getRole() != null) {
             if (user.getRole().equals("ROLE_ADMIN")) {
@@ -52,10 +53,14 @@ public class JWTService {
             if (user.getRole().equals("ROLE_CSR")) {
                 isCSR = true;
             }
+            if (user.getRole().equals("ROLE_MANAGER")) {
+                isManager = true;
+            }
         }
         claims.put("isAdmin", isAdmin);
         claims.put("isStaff", isStaff);
         claims.put("isCSR", isCSR);
+        claims.put("isManager", isManager);
         return createToken(claims, username, accessTokenExpiration);
     }
 
@@ -64,7 +69,8 @@ public class JWTService {
         Map<String, Object> claims = new HashMap<>();
         boolean isAdmin = false;
         boolean isStaff = false;
-        boolean isCSR   = false;
+        boolean isCSR = false;
+        boolean isManager = false;
 
         User user = userService.findByUsername(username);
         if (user != null && user.getRole() != null) {
@@ -77,10 +83,14 @@ public class JWTService {
             if (user.getRole().equals("ROLE_CSR")) {
                 isCSR = true;
             }
+            if (user.getRole().equals("ROLE_MANAGER")) {
+                isManager = true;
+            }
         }
         claims.put("isAdmin", isAdmin);
         claims.put("isStaff", isStaff);
         claims.put("isCSR", isCSR);
+        claims.put("isManager", isManager);
         return createToken(claims, username, refreshTokenExpiration);
     }
 

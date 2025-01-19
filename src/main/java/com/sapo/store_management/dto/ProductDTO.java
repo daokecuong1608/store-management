@@ -24,7 +24,7 @@ public class ProductDTO {
 
     private String image;
 
-    private String status;
+//    private String status;
 
 
     public String getCode() {
@@ -75,11 +75,11 @@ public class ProductDTO {
         this.image = image;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+//    public String getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
 }

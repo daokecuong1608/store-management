@@ -20,9 +20,10 @@ public class Endpoints {
         public static String[] ADMIN_PUT_ENDPOINT = {
                         "/api/test/admin/**",
                         "/api/customers/**",
-                        "/api/orders/**"
-
+                        "/api/orders/**",
+                        "/api/inventory-variants/**"
         };
+
         public static String[] ADMIN_DELETE_ENDPOINT = {
                         "/api/test/admin/**",
                         "/api/orders/**"
@@ -32,6 +33,7 @@ public class Endpoints {
                         "/api/test/staff/**",
                         "/api/customers/**",
                         "/api/orders/**"
+
         };
         public static String[] STAFF_POST_ENDPOINT = {
                         "/api/test/staff/**",
