@@ -2,6 +2,8 @@ package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 import java.time.LocalDateTime;
@@ -48,6 +50,7 @@ public class Product {
 
   @ManyToOne
   @JoinColumn(name = "brand_id", nullable = true, referencedColumnName = "id")
+  @OnDelete(action = OnDeleteAction.SET_NULL)
   private Brand brand;
 
   @ManyToMany
