@@ -1,5 +1,6 @@
 package com.sapo.store_management.service.product;
 
+import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
@@ -19,12 +20,15 @@ public interface ProductService {
     ProductResponse createProductResponse(ProductRequest productRequest);
 
     ProductResponse updateProductResponse(Integer id, ProductRequest productRequest);
+
     void deleteProductResponse(Integer id);
 
     List<ProductResponse> getProductsByTagName(String tagName);
 
-   Product getProductById(Integer id);
+    Product getProductById(Integer id);
 
-   Page<ProductResponse> getProductByName(String productName , int page , int size , String sortBy);
+    Page<ProductResponse> getProductByName(String productName, int page, int size, String sortBy);
+
+    List<ProductDTO> getAllProducts();
 
 }

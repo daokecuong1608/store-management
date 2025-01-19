@@ -1,4 +1,4 @@
-package com.sapo.store_management.dto;
+package com.sapo.store_management.dto.order;
 
 import java.util.List;
 
@@ -17,6 +17,8 @@ public class OrderRequest {
     private int coupon_id;
 
     private int staff_id;
+
+    private String note;
 
     @Min(value = 0, message = "Total phải lớn hơn hoặc bằng 0")
     private int total;

@@ -44,6 +44,8 @@ public class Order {
 
     private String status;
 
+    private String note;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+7")
     private Instant created_at;
 
@@ -54,7 +56,7 @@ public class Order {
     @JsonManagedReference
     private List<OrderProduct> orderProducts;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false, insertable = false, updatable = false)
     @JsonBackReference
     private Customer customer;

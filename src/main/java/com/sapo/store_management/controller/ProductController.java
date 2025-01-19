@@ -1,7 +1,10 @@
 package com.sapo.store_management.controller;
 
+import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
+import com.sapo.store_management.model.Product;
+import com.sapo.store_management.model.Variant;
 import com.sapo.store_management.service.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

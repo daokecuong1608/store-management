@@ -1,5 +1,6 @@
 package com.sapo.store_management.service.product;
 
+import com.sapo.store_management.dto.ProductDTO;
 import com.sapo.store_management.dto.image.ImageRequest;
 import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
@@ -35,7 +36,9 @@ public class ProductServiceImpl implements ProductService {
     private final ValueRepo valueRepo;
     private final OptionRepo optionRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo, CategoryRepo categoryRepo, TagRepo tagRepo, ImageRepo imageRepo, ValueRepo valueRepo, OptionRepo optionRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo,
+            CategoryRepo categoryRepo, TagRepo tagRepo, ImageRepo imageRepo, ValueRepo valueRepo,
+            OptionRepo optionRepo) {
         this.productRepo = productRepo;
         this.variantRepo = variantRepo;
         this.brandRepo = brandRepo;
@@ -51,6 +54,27 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<Product> response = productRepo.findAll(pageable);
         return response.map(ProductMapper::convertProductResponse);
+    }
+
+    @Override
+    public List<ProductDTO> getAllProducts() {
+
+        List<Product> products = productRepo.findAll();
+
+        // Convert each Product to ProductDTO
+        return products.stream()
+                .map(product -> new ProductDTO(
+                        product.getId(),
+                        product.getCode(),
+                        product.getName(),
+                        product.getDescription(),
+
+                        product.getPrice(),
+                        product.getCapital_price(),
+                        product.getImages().isEmpty() ? null : product.getImages().get(0).getImageUrl()
+
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -114,7 +138,6 @@ public class ProductServiceImpl implements ProductService {
         return mapProductToResponse(product);
     }
 
-
     @Override
     public void deleteProductResponse(Integer id) {
         Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
@@ -135,7 +158,6 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Can not find product"));
         return product;
     }
-
 
     @Override
     public Page<ProductResponse> getProductByName(String productName, int page, int size, String sortBy) {
@@ -223,14 +245,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void updateCategories(Product product, ProductRequest productRequest) {
-        List<Category> categories = productRequest.getCategories() == null ? null :
-                categoryRepo.findAllById(productRequest.getCategories());
+        List<Category> categories = productRequest.getCategories() == null ? null
+                : categoryRepo.findAllById(productRequest.getCategories());
         product.setCategories(categories);
     }
 
     private void updateTags(Product product, ProductRequest productRequest) {
-        List<Tag> tags = productRequest.getTags() == null ? null :
-                tagRepo.findAllById(productRequest.getTags());
+        List<Tag> tags = productRequest.getTags() == null ? null : tagRepo.findAllById(productRequest.getTags());
         product.setTags(tags);
     }
 
@@ -299,7 +320,6 @@ public class ProductServiceImpl implements ProductService {
             product.getImages().addAll(newImages);
         }
     }
-
 
     private ProductResponse mapProductToResponse(Product product) {
         ProductResponse response = ProductMapper.convertProductResponse(product);
