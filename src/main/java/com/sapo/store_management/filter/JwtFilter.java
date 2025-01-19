@@ -54,7 +54,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
         }
         filterChain.doFilter(request, response);
@@ -69,8 +68,9 @@ public class JwtFilter extends OncePerRequestFilter {
             authorities.add(new SimpleGrantedAuthority("ROLE_STAFF"));
         }else if (claims.get("isCSR") != null && (Boolean) claims.get("isCSR")) {
             authorities.add(new SimpleGrantedAuthority("ROLE_CSR"));
+        }else if (claims.get("isManager") != null && (Boolean) claims.get("isManager")){
+            authorities.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
         }
-
         return authorities;
     }
 

@@ -1,33 +1,48 @@
 package com.sapo.store_management.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="options")
+@Data
+@Builder
+@Table(name="tbl_option")
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private Integer id;
 
-    private int product_id;
-
+    @Column(name = "name")
     private String name;
 
-    @CreatedDate
-    private Date created_at;
+    @ManyToOne
+    @JoinColumn(name = "product_id" , nullable = true)
+    private Product product;
 
-    @LastModifiedDate
-    private Date updated_at;
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Value> values;
+
+    @Column(name = "created_at" , columnDefinition = "TIMESTAMP")
+    private LocalDateTime created_at;
+
+    @Column(name="updated_at" , columnDefinition = "TIMESTAMP")
+    private LocalDateTime updated_at;
+
+    @PrePersist
+    public void prePersist(){
+        created_at = LocalDateTime.now();
+        updated_at = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate(){
+        updated_at = LocalDateTime.now();
+    }
+
 }

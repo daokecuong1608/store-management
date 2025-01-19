@@ -1,37 +1,43 @@
 package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "tbl_brand")
 public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private Integer id;
 
+    @Column(name = "name")
     private String name;
 
-    @CreatedDate
-    private Date created_at;
 
-    @LastModifiedDate
-    private Date updated_at;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime created_at;
 
-    public Brand(String name, Date created_at) {
-        this.name = name;
-        this.created_at = created_at;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime updated_at;
+
+    @PrePersist
+    public void prePersist() {
+        this.created_at = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
     }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updated_at = LocalDateTime.now();
+    }
+
 }

@@ -2,36 +2,46 @@ package com.sapo.store_management.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.time.LocalDateTime;
+import java.util.List;
 
-import java.util.Date;
 
-@Entity
-@EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Data
+@Entity
+@Table(name = "tbl_variant")
 public class Variant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private Integer id;
 
-    private int image_id;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    private String option1;
+    @ElementCollection
+    @CollectionTable(name = "tbl_variant_values", joinColumns = @JoinColumn(name = "variant_id"))
+    @Column(name = "value_name")
+    private List<String> values;
 
-    private String option2;
 
-    private String option3;
-
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @CreatedDate
-    private Date created_at;
-
-    @LastModifiedDate
-    private Date updated_at;
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime created_at;
+    @Column(name = "updated_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime updated_at;
+    @PrePersist
+    public void prePersist() {
+        this.created_at = LocalDateTime.now();
+        this.updated_at = LocalDateTime.now();
+    }
+    @PreUpdate
+    public void preUpdate() {
+        this.updated_at = LocalDateTime.now();
+    }
 }

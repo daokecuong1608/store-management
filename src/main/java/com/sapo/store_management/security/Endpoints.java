@@ -8,16 +8,13 @@ public class Endpoints {
                         "/api/storages/**",
                         "/api/suppliers/**",
                         "/api/inventories/**",
-                        "/api/inventory-variants/**",
-                        "/api/customers/**"
+                        "/api/inventory-variants/**"
         };
         public static String[] ADMIN_POST_ENDPOINT = {
-                        "/api/test/admin/**",
-                        "/api/customers/**"
+                        "/api/test/admin/**"
         };
         public static String[] ADMIN_PUT_ENDPOINT = {
-                        "/api/test/admin/**",
-                        "/api/customers/**"
+                        "/api/test/admin/**"
 
         };
         public static String[] ADMIN_DELETE_ENDPOINT = {
@@ -25,8 +22,7 @@ public class Endpoints {
 
         };
         public static String[] STAFF_GET_ENDPOINT = {
-                        "/api/test/staff/**",
-                        "/api/customers/**"
+                        "/api/test/staff/**"
         };
         public static String[] STAFF_POST_ENDPOINT = {
                         "/api/test/staff/**",

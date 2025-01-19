@@ -9,6 +9,8 @@ import com.sapo.store_management.service.JWTService;
 import com.sapo.store_management.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,12 +21,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
@@ -85,17 +87,51 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRequest userRequest) {
+        System.out.println("UserRequest : " + userRequest.toString());
         try {
             userService.registerUser(userRequest);
-            return ResponseEntity.ok("User registered successfully");
+            return ResponseEntity.ok(Map.of("message", "User registered successfully"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred during registration");
+                    .body(Map.of("error", "An unexpected error occurred during registration."));
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable int id ,@RequestBody UserRequest userRequest){
+        try {
+            userService.updateUser(id, userRequest);
+            return ResponseEntity.ok(Map.of("message", "User updated successfully"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                   .body(Map.of("error", "An unexpected error occurred during user update."));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable int id){
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                   .body(Map.of("error", "An unexpected error occurred during user deletion."));
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllUsers(){
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 
 }
