@@ -1,6 +1,7 @@
 package com.sapo.store_management.mapper;
 
 import com.sapo.store_management.dto.category.CategoryResponse;
+import com.sapo.store_management.dto.image.ImageResponse;
 import com.sapo.store_management.dto.option.OptionResponse;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
@@ -38,7 +39,6 @@ public class ProductMapper {
         response.setDescription(product.getDescription());
         response.setPrice(product.getPrice());
         response.setCapital_price(product.getCapital_price());
-        response.setImage(product.getImage());
         response.setStatus(product.isStatus());
         response.setCreated_at(product.getCreated_at());
         response.setUpdated_at(product.getUpdated_at());
@@ -97,6 +97,17 @@ public class ProductMapper {
                 List.of();
         response.setVariants(variantResponses);
 
+
+        List<ImageResponse> imageResponses = (product.getImages() != null && !product.getImages().isEmpty()) ?
+                product.getImages().stream()
+                        .map(image -> ImageResponse.builder()
+                                .id(image.getId())
+                                .imageUrl(image.getImageUrl())
+                                .build())
+                        .collect(Collectors.toList())
+                :
+                List.of();
+        response.setImages(imageResponses);
         return response;
     }
 
@@ -107,7 +118,6 @@ public class ProductMapper {
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
         product.setCapital_price(productRequest.getCapital_price());
-        product.setImage(productRequest.getImage());
         product.setStatus(productRequest.isStatus());
         product.setCreated_at(LocalDateTime.now());
         product.setUpdated_at(LocalDateTime.now());

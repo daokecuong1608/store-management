@@ -19,13 +19,9 @@ public interface ProductService {
     ProductResponse createProductResponse(ProductRequest productRequest);
 
     ProductResponse updateProductResponse(Integer id, ProductRequest productRequest);
-
     void deleteProductResponse(Integer id);
 
-
     List<ProductResponse> getProductsByTagName(String tagName);
-
-   ProductResponse generateVariantsForProduct(Product product , List<OptionRequest> inputOptions);
 
    Product getProductById(Integer id);
 

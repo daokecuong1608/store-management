@@ -1,5 +1,7 @@
 package com.sapo.store_management.dto.product;
 
+import com.sapo.store_management.dto.image.ImageRequest;
+import com.sapo.store_management.dto.image.ImageResponse;
 import com.sapo.store_management.dto.option.OptionRequest;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,10 +27,10 @@ public class ProductRequest {
     private int price;
     @Min(value = 0, message = "Capital price must be greater than or equal to 0")
     private int capital_price;
-    private String image;
     private boolean status;
     private Integer brand;
     private List<Integer> categories;
     private List<Integer> tags;
     private List<OptionRequest> options;
+    private List<ImageRequest> images;
 }

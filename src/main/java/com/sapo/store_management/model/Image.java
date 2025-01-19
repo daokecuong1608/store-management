@@ -25,25 +25,12 @@ public class Image {
     @Column(name = "id")
     private Integer id;
 
-//    @NotNull(message = "Product ID cannot be null")
-//    @Positive(message = "Product ID must be a positive integer")
-//    @Column(name = "product_id", nullable = false)
-//    private Integer productId;
-//
-//    @NotNull(message = "Variant ID cannot be null")
-//    @Positive(message = "Variant ID must be a positive integer")
-//    @Column(name = "variant_id", nullable = false)
-//    private Integer variantId;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
-    @NotBlank(message = "Image URL cannot be blank")
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
-
-    @Column(name = "uploaded_by", nullable = true)
-    private String uploadedBy;
-
-    @Column(name = "status", nullable = true)
-    private String status;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime created_at;

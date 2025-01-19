@@ -1,5 +1,6 @@
 package com.sapo.store_management.service.product;
 
+import com.sapo.store_management.dto.image.ImageRequest;
 import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,18 +31,24 @@ public class ProductServiceImpl implements ProductService {
     private final BrandRepo brandRepo;
     private final CategoryRepo categoryRepo;
     private final TagRepo tagRepo;
+    private final ImageRepo imageRepo;
+    private final ValueRepo valueRepo;
+    private final OptionRepo optionRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo, CategoryRepo categoryRepo, TagRepo tagRepo) {
+    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo, CategoryRepo categoryRepo, TagRepo tagRepo, ImageRepo imageRepo, ValueRepo valueRepo, OptionRepo optionRepo) {
         this.productRepo = productRepo;
         this.variantRepo = variantRepo;
         this.brandRepo = brandRepo;
         this.categoryRepo = categoryRepo;
         this.tagRepo = tagRepo;
+        this.imageRepo = imageRepo;
+        this.valueRepo = valueRepo;
+        this.optionRepo = optionRepo;
     }
 
     @Override
     public Page<ProductResponse> getAllProductResponse(int page, int size, String sortBy) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).descending());
         Page<Product> response = productRepo.findAll(pageable);
         return response.map(ProductMapper::convertProductResponse);
     }
@@ -54,156 +63,57 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse createProductResponse(ProductRequest productRequest) {
         Product product = productMapper.convertProduct(productRequest);
-        // Kiểm tra và xử lý các Option
-        List<OptionRequest> inputOptions = productRequest.getOptions();
-        if (inputOptions != null && !inputOptions.isEmpty()) {
-            // Nếu có Option mới được truyền vào, xóa các Option cũ và cập nhật lại
-            product.setOptions(new ArrayList<>());
-            List<Option> updatedOptions = new ArrayList<>();
-            for (OptionRequest inputOption : inputOptions) {
-                Option option = new Option();
-                option.setName(inputOption.getName());
-                option.setProduct(product);
-                List<Value> updateValues = new ArrayList<>();
-                for (String valueName : inputOption.getValues()) {
-                    Value value = new Value();
-                    value.setName(valueName);
-                    value.setOption(option);
-                    updateValues.add(value);
-                }
-                option.setValues(updateValues);
-                updatedOptions.add(option);
+        // Kiểm tra và xử lý danh sách ảnh được gửi trong ProductRequest
+        List<ImageRequest> imageRequests = productRequest.getImages();
+        if (imageRequests != null && !imageRequests.isEmpty()) {
+            List<Image> images = new ArrayList<>();
+            for (ImageRequest imageRequest : imageRequests) {
+                Image image = new Image();
+                image.setImageUrl(imageRequest.getUrl());
+                image.setProduct(product); // Gắn sản phẩm cho ảnh
+                images.add(image);
             }
-            // Cập nhật các Option mới cho sản phẩm
-            product.setOptions(updatedOptions);
+            product.setImages(images); // Thiết lập danh sách ảnh cho sản phẩm
         }
-        // Lưu thông tin sản phẩm với các Option đã cập nhật
         productRepo.save(product);
-        // Nếu có Option mới, tạo các Variant dựa trên Option và Value
-        List<Variant> variants = new ArrayList<>();
-        if (inputOptions != null && !inputOptions.isEmpty()) {
-            // Tạo các Variant chỉ khi có Option
-            List<List<String>> allOptionValues = product.getOptions()
-                    .stream()
-                    .map(o -> o.getValues().stream().map(Value::getName)
-                            .collect(Collectors.toList()))
-                    .collect(Collectors.toList());
+        generateVariantsForProduct(product, productRequest.getOptions());
+        return mapProductToResponse(product);
 
-            List<List<String>> combinations = cartesianProduct(allOptionValues);
-            for (List<String> combination : combinations) {
-                Variant variant = Variant.builder()
-                        .product(product)
-                        .values(combination)
-                        .price(product.getPrice())
-                        .build();
-                variants.add(variant);
-            }
-            // Lưu tất cả các variants vào cơ sở dữ liệu
-            variantRepo.saveAll(variants);
-        }
-
-        // Chuyển đổi Product thành ProductResponse và thiết lập variants
-        ProductResponse response = ProductMapper.convertProductResponse(product);
-        response.setVariants(variants.stream()
-                .map(variant -> VariantResponse.builder()
-                        .variantDescription(String.join("-", variant.getValues()))  // Combine option values (e.g., "S-Đỏ")
-                        .price(variant.getPrice())
-                        .build())
-                .collect(Collectors.toList()));
-
-        return response;
     }
 
     @Override
     public ProductResponse updateProductResponse(Integer id, ProductRequest productRequest) {
-        Product product = productRepo.findById(id).orElseThrow(() -> new RuntimeException("Can not find product"));
-        product.setCode(productRequest.getCode());
-        product.setName(productRequest.getName());
-        product.setDescription(productRequest.getDescription());
-        product.setPrice(productRequest.getPrice());
-        product.setCapital_price(productRequest.getCapital_price());
-        product.setImage(productRequest.getImage());
-        product.setStatus(productRequest.isStatus());
-        if (productRequest.getBrand() != null) {
-            Brand brand = brandRepo.findById(productRequest.getBrand()).orElseThrow(null);
-            product.setBrand(brand);
-        }
-        if (productRequest.getCategories() != null && !productRequest.getCategories().isEmpty()) {
-            List<Category> categories = categoryRepo.findAllById(productRequest.getCategories());
-            if (categories != null && !categories.isEmpty()) {
-                product.setCategories(categories);
-            } else {
-                product.setCategories(null);
-            }
-        }
-        if (productRequest.getTags() != null && !productRequest.getTags().isEmpty()){
-            List<Tag> tags = tagRepo.findAllById(productRequest.getTags());
-            if (tags!= null &&!tags.isEmpty()) {
-                product.setTags(tags);
-            } else {
-                product.setTags(null);
-            }
-        }
-        // Kiểm tra và xử lý các Option
-        List<OptionRequest> inputOptions = productRequest.getOptions();
-        if (inputOptions != null && !inputOptions.isEmpty()) {
-            // Nếu có Option mới được truyền vào, xóa các Option cũ và cập nhật lại
-            product.setOptions(new ArrayList<>());
-            List<Option> updatedOptions = new ArrayList<>();
-            for (OptionRequest inputOption : inputOptions) {
-                Option option = new Option();
-                option.setName(inputOption.getName());
-                option.setProduct(product);
-                List<Value> updateValues = new ArrayList<>();
-                for (String valueName : inputOption.getValues()) {
-                    Value value = new Value();
-                    value.setName(valueName);
-                    value.setOption(option);
-                    updateValues.add(value);
-                }
-                option.setValues(updateValues);
-                updatedOptions.add(option);
-            }
-            // Cập nhật các Option mới cho sản phẩm
-            product.setOptions(updatedOptions);
-        }
-        // Lưu thông tin sản phẩm với các Option đã cập nhật
+        Product product = productRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cannot find product"));
+
+        // Update basic fields (code, name, description, etc.)
+        updateBasicFields(product, productRequest);
+
+        // Update brand
+        updateBrand(product, productRequest);
+
+        // Update categories
+        updateCategories(product, productRequest);
+
+        // Update tags
+        updateTags(product, productRequest);
+
+        // Update options and values
+        updateOptionsAndValues(product, productRequest);
+
+        // Update variants based on new options
+        updateVariants(product, productRequest);
+
+        // Update images with orphan removal
+        updateImages(product, productRequest);
+
+        // Save the product with all updates
         productRepo.save(product);
-        // Nếu có Option mới, tạo các Variant dựa trên Option và Value
-        List<Variant> variants = new ArrayList<>();
-        if (inputOptions != null && !inputOptions.isEmpty()) {
-            // Tạo các Variant chỉ khi có Option
-            List<List<String>> allOptionValues = product.getOptions()
-                    .stream()
-                    .map(o -> o.getValues().stream().map(Value::getName)
-                            .collect(Collectors.toList()))
-                    .collect(Collectors.toList());
 
-            List<List<String>> combinations = cartesianProduct(allOptionValues);
-            for (List<String> combination : combinations) {
-                Variant variant = Variant.builder()
-                        .product(product)
-                        .values(combination)
-                        .price(product.getPrice())
-                        .build();
-                variants.add(variant);
-            }
-            // Lưu tất cả các variants vào cơ sở dữ liệu
-            variantRepo.saveAll(variants);
-        }
-
-        // Chuyển đổi Product thành ProductResponse và thiết lập variants
-        ProductResponse response = ProductMapper.convertProductResponse(product);
-        response.setVariants(variants.stream()
-                .map(variant -> VariantResponse.builder()
-                        .variantDescription(String.join("-", variant.getValues()))  // Combine option values (e.g., "S-Đỏ")
-                        .price(variant.getPrice())
-                        .build())
-                .collect(Collectors.toList()));
-
-        return response;
-
+        // Map and return response
+        return mapProductToResponse(product);
     }
+
 
     @Override
     public void deleteProductResponse(Integer id) {
@@ -226,90 +136,6 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    @Override
-    public ProductResponse generateVariantsForProduct(Product product, List<OptionRequest> inputOptions) {
-        // Tạo danh sách Option từ dữ liệu người dùng nhập vào
-        List<Option> options = new ArrayList<>();
-        for (OptionRequest input : inputOptions) {
-            Option option = new Option();
-            option.setName(input.getName());
-            option.setProduct(product);
-
-            //Tạo value cho option
-            List<Value> values = new ArrayList<>();
-            for (String valueName : input.getValues()) {
-                Value value = new Value();
-                value.setName(valueName);
-                value.setOption(option);  // Liên kết Value với Option
-                values.add(value);
-            }
-            option.setValues(values);
-            options.add(option);
-        }
-        // Gán các Option mới vào Product
-        product.setOptions(options);
-
-        // Nếu không có tùy chọn thì không sinh Variant
-        if (options == null || options.isEmpty()) {
-            return ProductMapper.convertProductResponse(product);
-        }
-
-        // Lấy danh sách các giá trị cho mỗi Option
-        List<List<String>> allOptionValues = new ArrayList<>();
-        for (Option option : options) {
-            List<String> values = option.getValues().stream()
-                    .map(Value::getName)
-                    .collect(Collectors.toList());
-            allOptionValues.add(values);
-        }
-        // Kết hợp các giá trị để sinh Variant (Cartesian Product)
-        List<List<String>> combinations = cartesianProduct(allOptionValues);
-
-        // Tạo danh sách Variant từ kết hợp các giá trị
-        List<Variant> variants = new ArrayList<>();
-        for (List<String> combination : combinations) {
-            Variant variant = Variant.builder()
-                    .product(product)
-                    .values(combination)  // Lưu danh sách giá trị
-                    .price(product.getPrice())  // Áp dụng giá của sản phẩm
-                    .build();
-            variants.add(variant);
-        }
-        // Lưu các Variant vào cơ sở dữ liệu
-        variantRepo.saveAll(variants);
-
-        // Chuyển đổi Product thành ProductResponse và thiết lập variants
-        ProductResponse response = ProductMapper.convertProductResponse(product);
-        response.setVariants(variants.stream()
-                .map(variant -> VariantResponse.builder()
-                        .variantDescription(String.join("-", variant.getValues()))  // Combine option values (e.g., "S-Đỏ")
-                        .price(variant.getPrice())
-                        .build())
-                .collect(Collectors.toList()));
-
-        return response;
-    }
-
-    public List<List<String>> cartesianProduct(List<List<String>> lists) {
-        List<List<String>> result = new ArrayList<>();
-        if (lists.isEmpty()) {
-            result.add(new ArrayList<>());
-            return result;
-        }
-        List<String> firstList = lists.get(0);
-        //tạo ra tất cả các kết hợp có thể có của danh sách
-        List<List<String>> remainingLists = cartesianProduct(lists.subList(1, lists.size()));
-
-        for (String value : firstList) {
-            for (List<String> combination : remainingLists) {
-                List<String> newCombination = new ArrayList<>();
-                newCombination.add(value);
-                newCombination.addAll(combination);
-                result.add(newCombination);
-            }
-        }
-        return result;
-    }
 
     @Override
     public Page<ProductResponse> getProductByName(String productName, int page, int size, String sortBy) {
@@ -317,5 +143,172 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         Page<Product> response = productRepo.findByProductName(formatProductName, pageable);
         return response.map(ProductMapper::convertProductResponse);
+    }
+
+    /////////////////////////////////////////////
+
+    private void generateVariantsForProduct(Product product, List<OptionRequest> optionRequests) {
+        if (optionRequests == null || optionRequests.isEmpty()) {
+            product.setOptions(new ArrayList<>());
+            product.setVariants(new ArrayList<>());
+            return;
+        }
+        List<Option> options = optionRequests.stream().map(optionRequest -> {
+            Option option = new Option();
+            option.setName(optionRequest.getName());
+            option.setProduct(product);
+            List<Value> values = optionRequest.getValues().stream().map(valueName -> {
+                Value value = new Value();
+                value.setName(valueName);
+                value.setOption(option);
+                return value;
+            }).collect(Collectors.toList());
+            option.setValues(values);
+            return option;
+        }).collect(Collectors.toList());
+        product.setOptions(options);
+        List<List<String>> combinations = cartesianProduct(options.stream()
+                .map(option -> option.getValues().stream()
+                        .map(Value::getName)
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toList()));
+
+        List<Variant> variants = combinations.stream().map(combination -> {
+            Variant variant = new Variant();
+            variant.setProduct(product);
+            variant.setValues(combination);
+            variant.setPrice(product.getPrice());
+            return variant;
+        }).collect(Collectors.toList());
+
+        product.setVariants(variants);
+        variantRepo.saveAll(variants);
+    }
+
+    private List<List<String>> cartesianProduct(List<List<String>> lists) {
+        List<List<String>> result = new ArrayList<>();
+        if (lists.isEmpty()) {
+            result.add(new ArrayList<>());
+            return result;
+        }
+        List<String> firstList = lists.get(0);
+        List<List<String>> remainingLists = cartesianProduct(lists.subList(1, lists.size()));
+        for (String value : firstList) {
+            for (List<String> combination : remainingLists) {
+                List<String> newCombination = new ArrayList<>(combination);
+                newCombination.add(0, value);
+                result.add(newCombination);
+            }
+        }
+        return result;
+    }
+
+    private void updateBasicFields(Product product, ProductRequest productRequest) {
+        product.setCode(productRequest.getCode());
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setCapital_price(productRequest.getCapital_price());
+        product.setStatus(productRequest.isStatus());
+    }
+
+    private void updateBrand(Product product, ProductRequest productRequest) {
+        if (productRequest.getBrand() != null) {
+            Brand brand = brandRepo.findById(productRequest.getBrand())
+                    .orElseThrow(() -> new RuntimeException("Could not find"));
+            product.setBrand(brand);
+        } else {
+            product.setBrand(null);
+        }
+    }
+
+    private void updateCategories(Product product, ProductRequest productRequest) {
+        List<Category> categories = productRequest.getCategories() == null ? null :
+                categoryRepo.findAllById(productRequest.getCategories());
+        product.setCategories(categories);
+    }
+
+    private void updateTags(Product product, ProductRequest productRequest) {
+        List<Tag> tags = productRequest.getTags() == null ? null :
+                tagRepo.findAllById(productRequest.getTags());
+        product.setTags(tags);
+    }
+
+    private void updateOptionsAndValues(Product product, ProductRequest productRequest) {
+        if (productRequest.getOptions() != null) {
+            List<Option> newOptions = productRequest.getOptions().stream().map(optionRequest -> {
+                Option option = new Option();
+                option.setName(optionRequest.getName());
+                option.setProduct(product);
+                List<Value> values = optionRequest.getValues().stream().map(valueName -> {
+                    Value value = new Value();
+                    value.setName(valueName);
+                    value.setOption(option);
+                    return value;
+                }).collect(Collectors.toList());
+                option.setValues(values);
+                return option;
+            }).collect(Collectors.toList());
+            // Clear and update options
+            product.getOptions().clear();
+            product.getOptions().addAll(newOptions);
+        }
+    }
+
+    private void updateVariants(Product product, ProductRequest productRequest) {
+        // If there are options, generate new variants based on them
+        if (productRequest.getOptions() != null && !productRequest.getOptions().isEmpty()) {
+            List<List<String>> allOptionValues = product.getOptions().stream()
+                    .map(option -> option.getValues().stream().map(Value::getName).toList())
+                    .toList();
+
+            List<List<String>> combinations = cartesianProduct(allOptionValues);
+
+            List<Variant> newVariants = combinations.stream().map(combination -> {
+                Variant variant = new Variant();
+                variant.setProduct(product);
+                variant.setValues(combination);
+                variant.setPrice(product.getPrice());
+                return variant;
+            }).collect(Collectors.toList());
+
+            // Remove old variants and add new ones
+            product.getVariants().clear();
+            product.getVariants().addAll(newVariants);
+            variantRepo.saveAll(newVariants);
+        }
+    }
+
+    private void updateImages(Product product, ProductRequest productRequest) {
+        if (productRequest.getImages() != null) {
+            List<Image> newImages = productRequest.getImages().stream()
+                    .map(imageRequest -> {
+                        Image image = new Image();
+                        image.setProduct(product);
+                        image.setImageUrl(imageRequest.getUrl());
+                        return image;
+                    }).collect(Collectors.toList());
+
+            // Explicitly delete orphaned images (images that are no longer in the request)
+            List<Image> orphanedImages = product.getImages().stream()
+                    .filter(image -> !newImages.contains(image))
+                    .collect(Collectors.toList());
+            imageRepo.deleteAll(orphanedImages);
+            // Clear existing images and add the new ones
+            product.getImages().clear();
+            product.getImages().addAll(newImages);
+        }
+    }
+
+
+    private ProductResponse mapProductToResponse(Product product) {
+        ProductResponse response = ProductMapper.convertProductResponse(product);
+        response.setVariants(product.getVariants().stream()
+                .map(variant -> VariantResponse.builder()
+                        .variantDescription(String.join("-", variant.getValues()))
+                        .price(variant.getPrice())
+                        .build())
+                .collect(Collectors.toList()));
+        return response;
     }
 }

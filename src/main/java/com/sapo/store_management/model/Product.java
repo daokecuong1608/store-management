@@ -5,6 +5,7 @@ import lombok.*;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +36,6 @@ public class Product {
     @Column(name = "capital_price")
     private int capital_price;
 
-    @Column(name = "image")
-    private String image;
 
     @Column(name = "status")
     private boolean status;
@@ -67,13 +66,20 @@ public class Product {
   )
   private List<Tag> tags;
 
-
-  @OneToMany(mappedBy = "product" , cascade = CascadeType.ALL ,fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Option> options;
 
 
-  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-  private List<Variant> variants;
+
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<Variant> variants ;
+
+
+  @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<Image> images ;
+
+
+
 
   @PrePersist
     public void prePersist() {

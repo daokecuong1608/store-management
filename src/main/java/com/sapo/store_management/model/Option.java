@@ -1,8 +1,8 @@
 package com.sapo.store_management.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,9 +25,8 @@ public class Option {
     @JoinColumn(name = "product_id" , nullable = true)
     private Product product;
 
-    @OneToMany(mappedBy = "option" , cascade = CascadeType.ALL )
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Value> values;
-
 
     @Column(name = "created_at" , columnDefinition = "TIMESTAMP")
     private LocalDateTime created_at;

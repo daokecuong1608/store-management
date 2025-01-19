@@ -14,7 +14,8 @@ public class Endpoints {
 //            "/api/category/**",
 //            "/api/tag/**",
 //            "/api/product/**",
-            "/api/product/by-tag/**"
+            "/api/product/by-tag/**",
+            "/api/auth/**"
 
 
     };
@@ -23,14 +24,16 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/product/**"
+//            "/api/product/**" ,
+
     };
     public static String[] ADMIN_PUT_ENDPOINT = {
             "/api/test/admin/**",
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/product/**"
+            "/api/product/**",
+            "/api/auth/**"
 
     };
     public static String[] ADMIN_DELETE_ENDPOINT = {
@@ -38,7 +41,8 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/product/**"
+            "/api/product/**",
+            "/api/auth/**"
     };
     public static String[] STAFF_GET_ENDPOINT = {
             "/api/test/staff/**"
@@ -87,7 +91,7 @@ public class Endpoints {
             "/api/category/**",
             "/api/tag/**",
             "/api/product/**",
-            "/api/image/**"
+            "/api/image/**",
     };
     public static String[] PUBLIC_DELETE_ENDPOINT = {
             "/api/test/admin/**",
@@ -103,6 +107,10 @@ public class Endpoints {
             "/api/tag/**",
             "/api/product/**",
             "/api/product/generate-variants/**"
+    };
+
+    public static String[] MANAGER_POST_ENDPOINT = {
+            "/api/auth/register/**"
     };
 
 

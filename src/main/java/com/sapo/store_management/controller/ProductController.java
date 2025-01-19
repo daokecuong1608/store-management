@@ -72,22 +72,6 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @PutMapping("/generate-variants/{id}")
-    public ResponseEntity<?> generateVariantsForProduct(@PathVariable Integer id, @Valid @RequestBody List<OptionRequest> inpuOptionRequests) {
-        try {
-            Product product = productService.getProductById(id);
-            if (product == null) {
-                return ResponseEntity.notFound().build();
-            }
-            // Tạo các variant từ inputOptions và cập nhật sản phẩm
-            ProductResponse productResponse = productService.generateVariantsForProduct(product, inpuOptionRequests);
-            return ResponseEntity.ok(productResponse);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
-
-
     @GetMapping("/by-name")
     public ResponseEntity<Page<ProductResponse>> getProductByName(@RequestParam String productName, @RequestParam int page, @RequestParam int size, @RequestParam(defaultValue = "name") String sortBy) {
         Page<ProductResponse> product = productService.getProductByName(productName, page, size, sortBy);

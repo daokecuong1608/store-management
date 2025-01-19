@@ -2,6 +2,7 @@ package com.sapo.store_management.dto.product;
 
 import com.sapo.store_management.dto.brand.BrandResponse;
 import com.sapo.store_management.dto.category.CategoryResponse;
+import com.sapo.store_management.dto.image.ImageResponse;
 import com.sapo.store_management.dto.option.OptionResponse;
 import com.sapo.store_management.dto.tag.TagResponse;
 import com.sapo.store_management.dto.variant.VariantResponse;
@@ -24,7 +25,6 @@ public class ProductResponse {
     private String description;
     private int price;
     private int capital_price;
-    private String image;
     private boolean status;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
@@ -33,4 +33,5 @@ public class ProductResponse {
     private List<TagResponse> tags_name;
     private List<OptionResponse> options;
     private List<VariantResponse> variants;
+    private List<ImageResponse> images;
 }

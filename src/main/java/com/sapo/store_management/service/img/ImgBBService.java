@@ -25,7 +25,7 @@ public class ImgBBService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String uploadImageToImgBB(MultipartFile file) {
+    public ImgBBResponse uploadImageToImgBB(MultipartFile file) {
         try {
             // Encode image to Base64
             String encodedImage = Base64.getEncoder().encodeToString(file.getBytes());
@@ -49,17 +49,17 @@ public class ImgBBService {
             // Send the request
             ResponseEntity<ImgBBResponse> response = restTemplate.postForEntity(url, entity, ImgBBResponse.class);
 
+            System.out.println("ImgBBResponse : " + response);
+
             // Handle the response
             if (response.getBody() != null && response.getBody().getData() != null) {
-                System.out.println("ImgBBService: Image uploaded successfully. URL: " + response.getBody().getData().getUrl());
-                return response.getBody().getData().getUrl();
+                return response.getBody();
             }
 
             System.out.println("ImgBBService: No valid URL found in response.");
         } catch (Exception e) {
             System.out.println("ImgBBService: Error - " + e.getMessage());
         }
-
         throw new RuntimeException("Image upload failed");
     }
 }
