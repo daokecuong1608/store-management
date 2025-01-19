@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/brand")
 public class BrandController {
@@ -24,6 +26,12 @@ public class BrandController {
             @RequestParam(defaultValue = "id") String sortBy) {
 
         Page<BrandResponse> brands = brandService.getAllBrand(page, size, sortBy);
+        return ResponseEntity.ok(brands);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<BrandResponse>> getAllBrands(){
+        List<BrandResponse> brands = brandService.getAllBrands();
         return ResponseEntity.ok(brands);
     }
 

@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CategoryServiceIpml implements CategoryService {
@@ -30,6 +32,16 @@ public class CategoryServiceIpml implements CategoryService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         Page<Category> categories = categoryRepo.findAll(pageable);
         return categories.map(CategoryMapper::convertEntity);
+    }
+
+    @Override
+    public List<CategoryResponse> getAllCategories() {
+        List<Category> categories = categoryRepo.findAll();
+        List<CategoryResponse> categoriesResponse = new ArrayList<>();
+        for (Category category : categories) {
+            categoriesResponse.add(CategoryMapper.convertEntity(category));
+        }
+        return categoriesResponse;
     }
 
     @Override

@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/tag")
 public class TagControlller {
@@ -25,6 +27,12 @@ public class TagControlller {
     ) {
         Page<TagResponse> tag = tagService.getAllTag(page, size, sortBy);
         return ResponseEntity.ok(tag);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<TagResponse>> getAllTags() {
+        List<TagResponse> tagResponses =  tagService.getAllTags();
+        return ResponseEntity.ok(tagResponses);
     }
 
     @GetMapping("/{id}")

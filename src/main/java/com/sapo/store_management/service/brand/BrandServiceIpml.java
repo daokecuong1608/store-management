@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BrandServiceIpml implements BranhService {
@@ -29,6 +31,15 @@ public class BrandServiceIpml implements BranhService {
         return brand.map(BrandMapper::convertEntity);
     }
 
+    @Override
+    public List<BrandResponse> getAllBrands(){
+        List<Brand> brands = brandRepo.findAll();
+        List<BrandResponse> brandResponses = new ArrayList<>();
+        for (Brand brand : brands) {
+            brandResponses.add(BrandMapper.convertEntity(brand));
+        }
+        return brandResponses;
+    }
 
     @Override
     public BrandResponse getBrandById(Integer id) {

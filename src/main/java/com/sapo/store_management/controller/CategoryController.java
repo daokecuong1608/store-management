@@ -2,11 +2,14 @@ package com.sapo.store_management.controller;
 
 import com.sapo.store_management.dto.category.CategoryRequest;
 import com.sapo.store_management.dto.category.CategoryResponse;
+import com.sapo.store_management.model.Category;
 import com.sapo.store_management.service.category.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/category")
@@ -24,6 +27,12 @@ public class CategoryController {
             @RequestParam(defaultValue = "id") String sortBy) {
         Page<CategoryResponse> categories = categoryService.getAllCategory(page, size, sortBy);
         return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        List<CategoryResponse> categoryResponses = categoryService.getAllCategories();
+        return ResponseEntity.ok(categoryResponses);
     }
 
     @GetMapping("/{id}")
