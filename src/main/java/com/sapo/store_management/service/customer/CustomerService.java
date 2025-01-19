@@ -20,6 +20,9 @@ public class CustomerService {
     private CustomerMapper customerMapper;
 
     public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        if(customerRepository.existsByPhone(customerDTO.getPhone())){
+            throw new IllegalArgumentException("Phone number already exists");
+        }
         Customer customer = customerMapper.toEntity(customerDTO);
         Customer savedCustomer = customerRepository.save(customer);
         return customerMapper.toDTO(savedCustomer);
@@ -41,11 +44,11 @@ public class CustomerService {
         Customer savedCustomer = customerRepository.save(updatedCustomer);
         return customerMapper.toDTO(savedCustomer);
     }
-//
-//    public void deleteCustomer(Long id) {
-//        Customer customer = customerRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Customer not found"));
-//        customerRepository.delete(customer);
-//    }
+
+    public void deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        customerRepository.delete(customer);
+    }
 
 }
