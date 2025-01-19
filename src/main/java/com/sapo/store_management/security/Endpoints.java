@@ -26,8 +26,8 @@ public class Endpoints {
 
         public static String[] ADMIN_DELETE_ENDPOINT = {
                         "/api/test/admin/**",
-                        "/api/orders/**"
-
+                        "/api/orders/**",
+                        "/api/customers/**"
         };
         public static String[] STAFF_GET_ENDPOINT = {
                         "/api/test/staff/**",
