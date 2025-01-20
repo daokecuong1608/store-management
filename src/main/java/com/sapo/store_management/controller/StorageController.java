@@ -4,6 +4,7 @@ import com.sapo.store_management.dto.storage.StorageCreateRequest;
 import com.sapo.store_management.dto.storage.StorageRequest;
 import com.sapo.store_management.dto.storage.StorageResponse;
 import com.sapo.store_management.service.storage.StorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,24 +12,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/storages")
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class StorageController {
 
     private final StorageService storageService;
 
-    public StorageController(StorageService storageService) {
-        this.storageService = storageService;
-    }
-
     // Tạo mới Storage
-    @PostMapping
-    public ResponseEntity<StorageResponse> createStorage(@RequestBody StorageCreateRequest createRequest) {
-        StorageResponse response = storageService.createStorage(createRequest);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    @PostMapping("/warehouses")
+    public ResponseEntity<StorageResponse> createStorage(@RequestBody StorageCreateRequest request) {
+        return ResponseEntity.ok(storageService.createStorage(request));
     }
 
     // Cập nhật Storage
-    @PutMapping("/{id}")
+    @PutMapping("/warehouses/{id}")
     public ResponseEntity<StorageResponse> updateStorage(
             @PathVariable Integer id,
             @RequestBody StorageRequest request) {
@@ -42,21 +39,20 @@ public class StorageController {
     }
 
     // Xóa Storage
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/warehouses/{id}")
     public ResponseEntity<Void> deleteStorage(@PathVariable Integer id) {
         storageService.deleteStorage(id);
         return ResponseEntity.noContent().build();
     }
 
     // Lấy tất cả các Storage
-    @GetMapping
+    @GetMapping("/warehouses")
     public ResponseEntity<List<StorageResponse>> getAllStorages() {
-        List<StorageResponse> responses = storageService.getAllStorages();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(storageService.getAllStorages());
     }
 
     // Lấy Storage theo ID
-    @GetMapping("/{id}")
+    @GetMapping("/warehouses/{id}")
     public ResponseEntity<StorageResponse> getStorageById(@PathVariable Integer id) {
         StorageResponse response = storageService.getStorageById(id);
         return ResponseEntity.ok(response);

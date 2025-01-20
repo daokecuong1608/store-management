@@ -4,6 +4,7 @@ import com.sapo.store_management.dto.storage.StorageCreateRequest;
 import com.sapo.store_management.dto.storage.StorageRequest;
 import com.sapo.store_management.dto.storage.StorageResponse;
 import com.sapo.store_management.model.Storage;
+import java.math.BigDecimal;
 
 public class StorageMapper {
 
@@ -43,8 +44,8 @@ public class StorageMapper {
                 .code(storage.getCode())
                 .name(storage.getName())
                 .address(storage.getAddress())
-                .cash(storage.getCash())
-                .balance(storage.getBalance())
+                .cash(BigDecimal.valueOf(storage.getCash()))
+                .balance(BigDecimal.valueOf(storage.getBalance()))
                 .createdAt(storage.getCreatedAt())
                 .updatedAt(storage.getUpdatedAt())
                 .build();

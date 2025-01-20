@@ -26,4 +26,8 @@ public interface StorageService {
 
     // Lấy Storage entity (dùng trong các Service khác)
     Storage getStorageEntityById(Integer id);
+
+    Storage getStorage(Integer id);
+
+    void updateProductQuantity(Integer storageId, String productId, Integer quantity);
 }

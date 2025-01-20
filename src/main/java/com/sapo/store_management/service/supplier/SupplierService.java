@@ -4,6 +4,8 @@ import com.sapo.store_management.dto.supplier.SupplierCreateRequest;
 import com.sapo.store_management.dto.supplier.SupplierRequest;
 import com.sapo.store_management.dto.supplier.SupplierResponse;
 import com.sapo.store_management.model.Supplier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -26,4 +28,7 @@ public interface SupplierService {
 
     // Lấy Supplier entity (dùng trong các Service khác)
     Supplier getSupplierEntityById(Integer id);
+
+    Supplier getSupplier(Integer id);
+    Page<Supplier> searchSuppliers(String search, Pageable pageable);
 }

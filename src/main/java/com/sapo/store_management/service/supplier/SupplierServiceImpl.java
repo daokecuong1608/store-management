@@ -3,22 +3,24 @@ package com.sapo.store_management.service.supplier;
 import com.sapo.store_management.dto.supplier.SupplierCreateRequest;
 import com.sapo.store_management.dto.supplier.SupplierRequest;
 import com.sapo.store_management.dto.supplier.SupplierResponse;
+import com.sapo.store_management.exception.ResourceNotFoundException;
 import com.sapo.store_management.mapper.SupplierMapper;
 import com.sapo.store_management.model.Supplier;
 import com.sapo.store_management.repository.SupplierRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
 
-    public SupplierServiceImpl(SupplierRepository supplierRepository) {
-        this.supplierRepository = supplierRepository;
-    }
 
     @Override
     public SupplierResponse createSupplier(SupplierCreateRequest createRequest) {
@@ -87,5 +89,19 @@ public class SupplierServiceImpl implements SupplierService {
         // Tìm kiếm Supplier Entity (cho các Service khác sử dụng)
         return supplierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Supplier not found"));
+    }
+
+    @Override
+    public Supplier getSupplier(Integer id) {
+        return supplierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
+    }
+
+    @Override
+    public Page<Supplier> searchSuppliers(String search, Pageable pageable) {
+        if (search != null && !search.isEmpty()) {
+            return supplierRepository.findByNameContainingIgnoreCaseOrCodeContainingIgnoreCase(search, search, pageable);
+        }
+        return supplierRepository.findAll(pageable);
     }
 }

@@ -9,8 +9,13 @@ import com.sapo.store_management.repository.InventoryRepository;
 import com.sapo.store_management.service.product.ProductService;
 import com.sapo.store_management.service.storage.StorageService;
 import com.sapo.store_management.service.supplier.SupplierService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,5 +114,59 @@ public class InventoryServiceImpl implements InventoryService {
     public Inventory getInventoryEntityById(Integer id) {
         return inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Inventory not found"));
+    }
+
+    @Override
+    public Page<InventoryResponse> searchInventories(
+            int page, 
+            int size, 
+            String search, 
+            List<String> branch, 
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Integer minStock,
+            Integer maxStock,
+            String status
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Inventory> spec = Specification.where(null);
+        
+        if (search != null && !search.isEmpty()) {
+            spec = spec.and((root, query, cb) -> 
+                cb.or(
+                    cb.like(cb.lower(root.get("product").get("name")), "%" + search.toLowerCase() + "%"),
+                    cb.like(cb.lower(root.get("product").get("code")), "%" + search.toLowerCase() + "%")
+                )
+            );
+        }
+        
+        if (branch != null && !branch.isEmpty()) {
+            spec = spec.and((root, query, cb) -> root.get("storage").get("code").in(branch));
+        }
+        
+        if (startDate != null && endDate != null) {
+            spec = spec.and((root, query, cb) -> 
+                cb.between(root.get("createdAt"), startDate, endDate)
+            );
+        }
+        
+        if (minStock != null && maxStock != null) {
+            spec = spec.and((root, query, cb) -> 
+                cb.between(root.get("quantity"), minStock, maxStock)
+            );
+        }
+        
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> {
+                if (status.equals("in_stock")) {
+                    return cb.greaterThan(root.get("quantity"), 0);
+                } else {
+                    return cb.equal(root.get("quantity"), 0);
+                }
+            });
+        }
+
+        return inventoryRepository.findAll(spec, pageable)
+                .map(InventoryMapper::toResponse);
     }
 }

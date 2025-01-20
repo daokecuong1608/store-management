@@ -6,20 +6,18 @@ import com.sapo.store_management.dto.storage.StorageCreateRequest;
 import com.sapo.store_management.dto.storage.StorageRequest;
 import com.sapo.store_management.mapper.StorageMapper;
 import com.sapo.store_management.model.Storage;
-
+import com.sapo.store_management.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
     private final StorageRepository storageRepository;
-
-    public StorageServiceImpl(StorageRepository storageRepository) {
-        this.storageRepository = storageRepository;
-    }
 
     @Override
     public StorageResponse createStorage(StorageCreateRequest createRequest) {
@@ -88,5 +86,16 @@ public class StorageServiceImpl implements StorageService {
         // Tìm kiếm Storage Entity (cho các Service khác sử dụng)
         return storageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Storage not found"));
+    }
+
+    @Override
+    public Storage getStorage(Integer id) {
+        return storageRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Storage not found"));
+    }
+
+    @Override
+    public void updateProductQuantity(Integer storageId, String productId, Integer quantity) {
+        // Implement logic to update product quantity in storage
     }
 }

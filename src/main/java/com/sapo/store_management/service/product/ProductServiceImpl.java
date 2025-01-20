@@ -6,6 +6,7 @@ import com.sapo.store_management.dto.option.OptionRequest;
 import com.sapo.store_management.dto.product.ProductRequest;
 import com.sapo.store_management.dto.product.ProductResponse;
 import com.sapo.store_management.dto.variant.VariantResponse;
+import com.sapo.store_management.exception.ResourceNotFoundException;
 import com.sapo.store_management.mapper.ProductMapper;
 import com.sapo.store_management.model.*;
 import com.sapo.store_management.repository.*;
@@ -22,7 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -35,19 +39,7 @@ public class ProductServiceImpl implements ProductService {
     private final ImageRepo imageRepo;
     private final ValueRepo valueRepo;
     private final OptionRepo optionRepo;
-
-    public ProductServiceImpl(ProductRepo productRepo, VariantRepo variantRepo, BrandRepo brandRepo,
-            CategoryRepo categoryRepo, TagRepo tagRepo, ImageRepo imageRepo, ValueRepo valueRepo,
-            OptionRepo optionRepo) {
-        this.productRepo = productRepo;
-        this.variantRepo = variantRepo;
-        this.brandRepo = brandRepo;
-        this.categoryRepo = categoryRepo;
-        this.tagRepo = tagRepo;
-        this.imageRepo = imageRepo;
-        this.valueRepo = valueRepo;
-        this.optionRepo = optionRepo;
-    }
+    private final ProductRepository productRepository;
 
     @Override
     public Page<ProductResponse> getAllProductResponse(int page, int size, String sortBy) {
@@ -165,6 +157,20 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
         Page<Product> response = productRepo.findByProductName(formatProductName, pageable);
         return response.map(ProductMapper::convertProductResponse);
+    }
+
+    @Override
+    public Product getProductEntityById(Integer id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
+
+    @Override
+    public Page<Product> searchProducts(String search, Pageable pageable) {
+        if (search != null && !search.isEmpty()) {
+            return productRepository.findByNameContainingIgnoreCaseOrCodeContainingIgnoreCase(search, search, pageable);
+        }
+        return productRepository.findAll(pageable);
     }
 
     /////////////////////////////////////////////

@@ -7,6 +7,7 @@ import com.sapo.store_management.dto.product.ProductResponse;
 import com.sapo.store_management.model.Product;
 import com.sapo.store_management.model.Variant;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,5 +31,9 @@ public interface ProductService {
     Page<ProductResponse> getProductByName(String productName, int page, int size, String sortBy);
 
     List<ProductDTO> getAllProducts();
+
+    Product getProductEntityById(Integer id);
+
+    Page<Product> searchProducts(String search, Pageable pageable);
 
 }
