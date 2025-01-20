@@ -105,7 +105,7 @@ public class ReceiveInventoryServiceImpl implements ReceiveInventoryService {
         supplierService.getSupplier(request.getSupplierId());
         storageService.getStorage(request.getStorageId());
         request.getProducts().forEach(product -> 
-            productService.getProduct(product.getProductId())
+            productService.getProductEntityById(product.getProductId())
         );
 
         ReceiveInventory updated = receiveInventoryMapper.toEntity(request);
