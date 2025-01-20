@@ -23,4 +23,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT o FROM Order o WHERE o.code = :query OR o.customer.phone = :query")
     Page<Order> searchByCodeOrCustomerPhone(@Param("query") String query, @NonNull Pageable pageable);
 
+    Page<Order> findByCustomerId(int customerId, Pageable pageable);
+
 }

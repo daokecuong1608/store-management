@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class CustomerDTO {
@@ -37,8 +38,9 @@ public class CustomerDTO {
 
     private String note;
 
-    // Getters and Setters
+    private List<OrderResponse> orders;
 
+    // Getters and Setters
 
     public Integer getId() {
         return id;
@@ -110,5 +112,13 @@ public class CustomerDTO {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public List<OrderResponse> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderResponse> orders) {
+        this.orders = orders;
     }
 }

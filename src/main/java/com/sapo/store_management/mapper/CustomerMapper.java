@@ -1,12 +1,16 @@
 package com.sapo.store_management.mapper;
 
 import com.sapo.store_management.dto.customer.CustomerDTO;
+import com.sapo.store_management.dto.customer.OrderResponse;
 import com.sapo.store_management.model.Customer;
+import com.sapo.store_management.model.Order;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.format.DateTimeFormatter;
-    
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class CustomerMapper {
 
@@ -41,6 +45,18 @@ public class CustomerMapper {
         dto.setWardCode(entity.getWardCode());
         dto.setAddressDetail(entity.getAddressDetail());
         dto.setNote(entity.getNote());
+
+        if (entity.getOrders() != null) {
+            dto.setOrders(entity.getOrders().stream()
+                    .map(this::toOrderResponse)
+                    .collect(Collectors.toList()));
+        }
         return dto;
+    }
+
+    private OrderResponse toOrderResponse(Order order) {
+        OrderResponse response = new OrderResponse();
+        response.setId(order.getId());
+        return response;
     }
 }
