@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class CustomerDTO {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Fullname cannot be empty or blank")
     private String fullname;
@@ -39,11 +39,12 @@ public class CustomerDTO {
 
     // Getters and Setters
 
-    public int getId() {
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

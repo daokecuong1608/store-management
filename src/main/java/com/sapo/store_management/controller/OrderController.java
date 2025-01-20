@@ -24,7 +24,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Page<OrderDTO>> getOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

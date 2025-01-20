@@ -15,7 +15,7 @@ import java.util.List;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "fullname", nullable = false, length = 255)
     private String fullname;
@@ -41,17 +41,18 @@ public class Customer {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Order> orders;
 
     // Getters and Setters
 
-    public int getId() {
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -63,12 +64,12 @@ public class Customer {
         this.fullname = fullname;
     }
 
-    public Date getBirthday() {
-        return birthday;
+    public String getGender() {
+        return gender;
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getPhone() {
@@ -79,12 +80,12 @@ public class Customer {
         this.phone = phone;
     }
 
-    public String getGender() {
-        return gender;
+    public Date getBirthday() {
+        return birthday;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 
     public String getDistrictCode() {
@@ -126,5 +127,4 @@ public class Customer {
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
-
 }

@@ -112,13 +112,19 @@ public class OrderService {
 
             orderDTO.setOrderProducts(productDTOs);
 
+
             UserMapper userMapper = new UserMapper();
             userRepository.findById(order.getStaff_id())
                     .ifPresent(user -> orderDTO.setStaff(userMapper.toDTO(user)));
 
-            CustomerMapper customerMapper = new CustomerMapper();
-            customerRepository.findById(order.getCustomer_id())
-                    .ifPresent(customer -> orderDTO.setCustomer(customerMapper.toDTO(customer)));
+            // Kiểm tra xem customer_id có tồn tại không
+            if (order.getCustomer() != null) {
+                CustomerMapper customerMapper = new CustomerMapper();
+                customerRepository.findById(order.getCustomer_id())
+                        .ifPresent(customer -> orderDTO.setCustomer(customerMapper.toDTO(customer)));
+            } else {
+                orderDTO.setCustomer(null);  // Nếu không có customer_id, có thể set null hoặc để trống
+            }
             return orderDTO;
         });
     }

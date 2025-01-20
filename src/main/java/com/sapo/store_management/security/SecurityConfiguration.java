@@ -50,21 +50,25 @@ public class SecurityConfiguration {
                 config -> config
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh-token").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, Endpoints.ADMIN_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.POST, Endpoints.ADMIN_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.PUT, Endpoints.ADMIN_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, Endpoints.ADMIN_DELETE_ENDPOINT)
-                        .hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.GET, Endpoints.STAFF_GET_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
-                        .requestMatchers(HttpMethod.POST, Endpoints.STAFF_POST_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
-                        .requestMatchers(HttpMethod.PUT, Endpoints.STAFF_PUT_ENDPOINT).hasAnyAuthority("ROLE_STAFF")
-                        .requestMatchers(HttpMethod.DELETE, Endpoints.STAFF_DELETE_ENDPOINT)
-                        .hasAnyAuthority("ROLE_STAFF")
-                        .requestMatchers(HttpMethod.GET, Endpoints.CSR_GET_ENDPOINT).hasAnyAuthority("ROLE_CSR")
-                        .requestMatchers(HttpMethod.POST, Endpoints.CSR_POST_ENDPOINT).hasAnyAuthority("ROLE_CSR")
-                        .requestMatchers(HttpMethod.PUT, Endpoints.CSR_PUT_ENDPOINT).hasAnyAuthority("ROLE_CSR")
-                        .requestMatchers(HttpMethod.DELETE, Endpoints.CSR_DELETE_ENDPOINT).hasAnyAuthority("ROLE_CSR"));
+
+                        // Common Endpoints for all roles
+                        .requestMatchers(HttpMethod.GET, Endpoints.CSR_STAFF_ADMIN_MANAGER_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF", "ROLE_CSR")
+                        .requestMatchers(HttpMethod.POST, Endpoints.CSR_STAFF_ADMIN_MANAGER_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF", "ROLE_CSR")
+                        .requestMatchers(HttpMethod.PUT, Endpoints.CSR_STAFF_ADMIN_MANAGER_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF", "ROLE_CSR")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.CSR_ADMIN_MANAGER_DELETE_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_CSR")
+
+
+                        .requestMatchers(HttpMethod.GET, Endpoints.STAFF_ADMIN_MANAGER_GET_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF")
+                        .requestMatchers(HttpMethod.POST, Endpoints.STAFF_ADMIN_MANAGER_POST_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF")
+                        .requestMatchers(HttpMethod.PUT, Endpoints.STAFF_ADMIN_MANAGER_PUT_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.ADMIN_MANAGER_DELETE_ENDPOINT).hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+
+                        .requestMatchers(HttpMethod.POST, Endpoints.MANAGER_POST_ENDPOINT)
+                        .hasAnyAuthority("ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, Endpoints.MANAGER_DELETE_ENDPOINT)
+                        .hasAnyAuthority("ROLE_MANAGER")
+
+        );
         http.cors(Customizer.withDefaults());
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

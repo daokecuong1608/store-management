@@ -35,7 +35,7 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
 
-    public CustomerDTO updateCustomer(Long id, CustomerDTO customerDTO) {
+    public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) {
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
@@ -58,7 +58,7 @@ public class CustomerService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(Integer id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         customerRepository.delete(customer);

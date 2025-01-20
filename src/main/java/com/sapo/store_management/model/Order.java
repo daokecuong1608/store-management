@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "`order`")
@@ -57,8 +59,9 @@ public class Order {
     private List<OrderProduct> orderProducts;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "customer_id", nullable = true, insertable = false, updatable = false)
     @JsonBackReference
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Customer customer;
 
     @PrePersist
