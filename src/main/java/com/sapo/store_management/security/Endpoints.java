@@ -28,7 +28,9 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-
+            "/api/warehouses/**",
+            "/api/receive-inventories/**",
+            "/api/inventories/**"
     };
 
     public static String[] STAFF_ADMIN_MANAGER_POST_ENDPOINT = {
@@ -36,14 +38,21 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/orders/**"
+            "/api/orders/**",
+            "/api/warehouses/**",
+            "/api/receive-inventories/**",
+            "/api/receive-inventories/*/import/**",
+            "/api/inventories/**"
     };
     public static String[] STAFF_ADMIN_MANAGER_PUT_ENDPOINT = {
             "/api/product/**",
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/orders/**"
+            "/api/orders/**",
+            "/api/warehouses/**",
+            "/api/receive-inventories/**",
+            "/api/inventories/**"
     };
 
     public static String[] ADMIN_MANAGER_DELETE_ENDPOINT = {
@@ -51,7 +60,10 @@ public class Endpoints {
             "/api/brand/**",
             "/api/category/**",
             "/api/tag/**",
-            "/api/orders/**"
+            "/api/orders/**",
+            "/api/warehouses/**",
+            "/api/receive-inventories/**",
+            "/api/inventories/**"
     };
 
     public static String[] MANAGER_POST_ENDPOINT = {
